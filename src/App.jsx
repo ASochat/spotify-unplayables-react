@@ -12,12 +12,14 @@ import { useEffect, useState } from 'react'
 import { redirectToAuthCodeFlow, getAccessToken } from './modules/spotify_connect'
 import { fetchAllSongs, fetchProfile, fetchTopTracks, filterUnplayables } from './modules/spotify_fetch.js'
 
+// Import Bootstrap components
+import { Table, Form, Button } from 'react-bootstrap'
 
 const Connecter = (props) => {
 
   return (
     <div>
-      <button onClick={props.onClick}>Connect to Spotify to feth your data</button>
+      <Button variant="primary" onClick={props.onClick}>Connect to Spotify to feth your data</Button>
     </div>
   )
 
@@ -77,7 +79,8 @@ const UnplayableTracks = (props) => {
       <p>Please note that we don't fetch your local files in your saved tracks.
         Therefore, the number on each track may not be the right one- it still gives an indication on its place in your list.
       </p>
-      <table>
+      {/* Bootstrap built in Table component */}
+      <Table striped>
           <thead>
               <tr>
                   <th>Number</th>
@@ -102,7 +105,7 @@ const UnplayableTracks = (props) => {
           </tr>
           ) }
           </tbody>
-      </table>
+      </Table>
     </div>
   )
 

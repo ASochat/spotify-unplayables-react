@@ -33,7 +33,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 // import { promisify } from 'util.promisify'
 // CAN'T REQUIRE MODULES LIKE ON NODE --> Module "util" has been externalized for browser compatibility. Cannot access "util.promisify" in client code. See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
-import './index.css'
+// import './index.css'
 import App from './App.jsx'
 import dotenv from 'dotenv'
 
