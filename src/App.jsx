@@ -6,20 +6,21 @@
 console.log('START APP.JSX')
 
 import { useEffect, useState } from 'react'
-//import './App.css'
 
 // Import created modules
 import { redirectToAuthCodeFlow, getAccessToken } from './modules/spotify_connect'
 import { fetchAllSongs, fetchProfile, fetchTopTracks, filterUnplayables } from './modules/spotify_fetch.js'
 
 // Import Bootstrap components
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { Table, Form, Button } from 'react-bootstrap'
+import './App.scss'
 
 const Connecter = (props) => {
 
   return (
     <div>
-      <Button variant="primary" onClick={props.onClick}>Connect to Spotify to feth your data</Button>
+      <Button variant="primary" size="lg" onClick={props.onClick} active>Connect to Spotify to feth your data</Button>
     </div>
   )
 

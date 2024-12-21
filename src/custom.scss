@@ -1,0 +1,16 @@
+/* make the customizations */
+$theme-colors: (
+  'info': tomato,
+  'danger': teal
+);
+
+$primary: #4bdb53;
+
+$body-bg: #eaeaea;
+$body-color: #000000;
+
+$button-color: #38b85d;
+
+/* import bootstrap to set changes */
+@import 'bootstrap/scss/bootstrap';
+
