@@ -30,7 +30,7 @@ export async function fetchTopTracks(token) {
 
 export async function fetchAllSongs(token) {
 
-    let offset = 0;
+    let offset = 1600;
     let batchSize = 50; 
     var tracks = [];
     var newTracks = [];  // Holds new batch of tracks

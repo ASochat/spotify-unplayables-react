@@ -63,99 +63,17 @@ let refreshCounter = 0;
 
 // There should be something here to check token with a try/catch
 
-
-// SPOTIFY GET TOKEN IF NOT DEFINED AND USER CODE VALID
-const appClientId = 'e61711cbd130408abf2d471288b77e87';
-const redirectUrl = 'http://localhost:5174/';
-//localStorage.removeItem('access_token'); // TEMPORARY ONLY FOR DEBUGGING
-const accessToken = localStorage.getItem("access_token");
-console.log("Access token is stored at: " + accessToken);
-const params = new URLSearchParams(window.location.search)
-const URLparamCode = params.get('code');
-const storedUsedCode = localStorage.getItem('spotify_user_code')
-
-// THE USER CODE REMAINS IN THE URL. SHOULD PROBABLY REDIRECT TO PAGE WITHOUT IT, BUT... WHEN I'LL HAVE A DATABASE
-const isCodeUsed = URLparamCode === storedUsedCode;
-
-// I had to define all userData properties since they are used in App.jsx. 
-// There's probably a better way, either through class, or JSON loading
-let userData = localStorage.getItem('user_data')?
-  JSON.parse(localStorage.getItem('user_data'))
-  : { 
-    fetched: false,
-    profile: {displayName: '', email: '', country:'', external_urls: {spotify: ''}, images: []}, 
-    topTracks: [], 
-    allSongs: [], 
-    unplayables: [],
-  }
-
-console.log('Post definition userData: ', userData);
-
-const refresh = (userData) => {
-  refreshCounter += 1;
-  console.log('refreshing the app:', refreshCounter)
-  console.log('In main refresh user data:', userData)
+const refresh = () => {
+  // refreshCounter += 1;
+  // console.log('refreshing the app:', refreshCounter)
   createRoot(document.getElementById('root')).render(
     <StrictMode>
-      <App userData={userData} />
+      <App />
     </StrictMode>,
   )
 }
 
-// Théoriquement, on aurait même pas besoin de faire un localStorage, il faut juste passer la variable à l'app
-// Ici on utilise userData.fetched mais il faudrait plutôt un évènement de refresher
-if (!userData.fetched && !isCodeUsed) {
-  // REMOVED CONDITION (!accessToken || accessToken === 'undefined')
-  // since we use the accessToken only once - for now
-  console.log('Getting access token...')
-  getAccessToken(appClientId, URLparamCode, redirectUrl).then(accessToken => {
-    const profile = fetchProfile(accessToken)
-    const topTracks = fetchTopTracks(accessToken)
-    const allSongs = fetchAllSongs(accessToken)
-    const unplayables = allSongs
-      .then(songs => { 
-        const filteredUnplayables = filterUnplayables(songs);
-        return filteredUnplayables;
-          // console.log('Post then unplayables:', filterUnplayables(songs))
-        })
-      .catch(error => console.error('Failed to fetch all tracks', error))
-
-    console.log('Post then unplayables, probably still waiting:', unplayables)
-
-    Promise.all([profile, topTracks, allSongs, unplayables]).then(([profile, topTracks, allSongs, unplayables]) => {
-      console.log('Starting promise to pass all user data')
-      userData = { fetched: true, profile, topTracks, allSongs, unplayables }  
-      console.log('After Promise userData:', userData);
-      localStorage.setItem('user_data', JSON.stringify(userData));
-      // WARNING: Apparently I shouldn't re-render, I don't know if there's a refresh function, of through const, IDK. "You are calling ReactDOMClient.createRoot() on a container that has already been passed to createRoot() before. Instead, call root.render() on the existing root instead if you want to update it."
-      // Perhaps simply trough a "else"? YES IT WORKS!
-      refresh(userData);
-    })
-
-    // THE PROMISE SHOULD PROBABLY HAVE THIS FORM BUT BE HANDLED WITH THE SPOTIFY FETCH DIRECTLY
-    // const songsPromise = new Promise((resolve, reject) => {
-    //   fetchAllSongs(accessToken)
-    // })
-    // Again a problem with unplayables... Promise doesn't work
-    // const unplayables = filterUnplayables(allSongs) // Like this it just renders an empty array since allSongs is not defined
-    // const unplayables = new Promise((resolve, reject) => {
-    //   setTimeout(() => {
-    //     resolve(filterUnplayables(allSongs))
-    //   }, 2000)
-    // })
-    // allSongs.then(songs => {
-    //   console.log('Finished fetching all songs!')
-    //   const unplayables = filterUnplayables(songs)
-    //   console.log('Post fetching songs unplayables:', unplayables);
-    // }).catch(error => console.error('Failed to fetch all songs', error))
-  })
-  // can't reuse the same user code, storing it local storage to avoid confusion
-  localStorage.setItem('spotify_user_code', URLparamCode);
-} else {
-  refresh(userData);
-}
-
-// refresh(userData);
+refresh();
 
 // Making repeated calls to the render method is not the recommended way to re-render components.
 // It works, but it's not the best
