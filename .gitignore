@@ -3,3 +3,5 @@ node_modules
 
 # environment variables
 .env
+
+# something they remove package-lock.json but for now I keep it

@@ -66,7 +66,7 @@ let refreshCounter = 0;
 
 // SPOTIFY GET TOKEN IF NOT DEFINED AND USER CODE VALID
 const appClientId = 'e61711cbd130408abf2d471288b77e87';
-const redirectUrl = 'http://localhost:5173/';
+const redirectUrl = 'http://localhost:5174/';
 //localStorage.removeItem('access_token'); // TEMPORARY ONLY FOR DEBUGGING
 const accessToken = localStorage.getItem("access_token");
 console.log("Access token is stored at: " + accessToken);
