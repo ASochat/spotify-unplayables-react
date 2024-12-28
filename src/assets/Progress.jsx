@@ -1,4 +1,4 @@
-const Progress = ({}) => {  
+const Progress = ({ colour, percentage }) => {  
 
     const cleanPercentage = (percentage) => {
         const isNegativeOrNaN = !Number.isFinite(+percentage) || percentage < 0; // we can set non-numbers to 0 here
@@ -6,61 +6,48 @@ const Progress = ({}) => {
         return isNegativeOrNaN ? 0 : isTooHigh ? 100 : +percentage;
       };
       
-      const Circle = ({ colour, percentage }) => {
-        const r = 70;
-        const circ = 2 * Math.PI * r;
-        const strokePct = ((100 - percentage) * circ) / 100; // where stroke will start, e.g. from 15% to 100%.
-        return (
-          <circle
-            r={r}
-            cx={100}
-            cy={100}
-            fill="transparent"
-            stroke={strokePct !== circ ? colour : ""} // remove colour as 0% sets full circumference
-            strokeWidth={"2rem"}
-            strokeDasharray={circ}
-            strokeDashoffset={percentage ? strokePct : 0}
-          ></circle>
-        );
-      };
+    const Circle = ({ colour, percentage }) => {
+    const r = 70;
+    const circ = 2 * Math.PI * r;
+    const strokePct = ((100 - percentage) * circ) / 100; // where stroke will start, e.g. from 15% to 100%.
+    return (
+        <circle
+        r={r}
+        cx={100}
+        cy={100}
+        fill="transparent"
+        stroke={strokePct !== circ ? colour : ""} // remove colour as 0% sets full circumference
+        strokeWidth={"2rem"}
+        strokeDasharray={circ}
+        strokeDashoffset={percentage ? strokePct : 0}
+        ></circle>
+    );
+    };
+    
+    const Text = ({ percentage }) => {
+    return (
+        <text
+        x="50%"
+        y="50%"
+        dominantBaseline="central"
+        textAnchor="middle"
+        fontSize={"1.5em"}
+        >
+        {percentage.toFixed(0)}%
+        </text>
+    );
+    };
+    
+    const pct = cleanPercentage(percentage);
       
-      const Text = ({ percentage }) => {
-        return (
-          <text
-            x="50%"
-            y="50%"
-            dominantBaseline="central"
-            textAnchor="middle"
-            fontSize={"1.5em"}
-          >
-            {percentage.toFixed(0)}%
-          </text>
-        );
-      };
-      
-      const Pie = ({ percentage, colour }) => {
-        const pct = cleanPercentage(percentage);
-        return (
-          <svg width={200} height={200}>
-            <g transform={`rotate(-90 ${"100 100"})`}>
-              <Circle colour="lightgrey" />
-              <Circle colour={colour} percentage={pct} />
-            </g>
-            <Text percentage={pct} />
-          </svg>
-        );
-      };
-      
-
     return (
         <div>
-            <svg width="200" height="200">
-                <g transform="rotate(-90 100 100)">
-                    <circle r="70" cx="100" cy="100" fill="transparent" stroke="lightgrey" strokeWidth="2rem" strokeDasharray="439.8" strokeDashoffset="0"></circle>
-                    <circle r="70" cx="100" cy="100" fill="transparent" stroke="blue" strokeWidth="2rem" strokeDasharray="439.8" strokeDashoffset="66"> 
-                    </circle>
+            <svg width={200} height={200}>
+                <g transform={`rotate(-90 ${"100 100"})`}>
+                    <Circle colour="lightgrey" />
+                    <Circle colour={colour} percentage={pct} />
                 </g>
-                <text x="50%" y="50%" dominantBaseline="central" textAnchor="middle">85%</text>
+                <Text percentage={pct} />
             </svg>
         </div>
     )

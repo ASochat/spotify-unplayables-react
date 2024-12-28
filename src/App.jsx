@@ -194,6 +194,12 @@ const App = (props) => {
     } 
   })
 
+  const [percentage, setPercentage] = useState(0)
+
+  setTimeout(
+    () => setPercentage(percentage + 5),
+    2000
+  )
 
   return (
     <>
@@ -204,7 +210,7 @@ const App = (props) => {
       <Profile profile={userData.profile}/>
       <TopTracks topTracks={userData.topTracks}/>
       <UnplayableTracks unplayables={userData.unplayables}/>
-      <Progress/>
+      <Progress colour={'#1ed760'} percentage={percentage}/>
 
       <br/>
     </>
