@@ -19,8 +19,10 @@ import './App.scss'
 const Connecter = (props) => {
 
   return (
-    <div>
-      <Button variant="primary" size="lg" onClick={props.onClick} active>Connect to Spotify to feth your data</Button>
+    <div className="mt-5">
+      <Button variant="primary" size="lg" className="btn btn-outline-primary" onClick={props.onClick}>
+        <span className="text-dark">Connect to Spotify to fetch your data</span>
+      </Button>
     </div>
   )
 
@@ -44,7 +46,7 @@ const Profile = (props) => {
   // console.log('in Profile component profile:', profile);
 
   return (
-    <div>
+    <div className="container mt-5 pr-5">
       <h2>Logged in as </h2>
       <ul>
         <li>User ID: { profile.userId }</li>
@@ -60,7 +62,7 @@ const Profile = (props) => {
 const TopTracks = (props) => {
 
   return (
-    <div>
+    <div className="container mt-5">
       <h2>Your {props.topTracks.length} top tracks</h2>
       <ul>
         { props.topTracks.map ( (track, index) => 
@@ -75,7 +77,7 @@ const TopTracks = (props) => {
 const UnplayableTracks = (props) => {
 
   return (
-    <div>
+    <div className="container mt-5">
       <h2>Your unplayable tracks</h2>
       <p>Please note that we don't fetch your local files in your saved tracks.
         Therefore, the number on each track may not be the right one- it still gives an indication on its place in your list.
