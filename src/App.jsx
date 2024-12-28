@@ -15,6 +15,7 @@ import { fetchAllSongs, fetchProfile, fetchTopTracks, filterUnplayables } from '
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Table, Form, Button } from 'react-bootstrap'
 import './App.scss'
+import Progress from './assets/Progress.jsx'
 
 const Connecter = (props) => {
 
@@ -203,6 +204,7 @@ const App = (props) => {
       <Profile profile={userData.profile}/>
       <TopTracks topTracks={userData.topTracks}/>
       <UnplayableTracks unplayables={userData.unplayables}/>
+      <Progress/>
 
       <br/>
     </>
