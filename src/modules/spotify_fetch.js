@@ -41,7 +41,7 @@ export async function fetchAllSongs(token) {
 
     while (batchSize == 50) {
         // We should use offset to show a loading indicator to users
-        console.log(offset)
+        // console.log(offset)
 
         var result = await fetch("https://api.spotify.com/v1/me/tracks?market=NO&limit=50&offset="+offset, {
             method: "GET", 
@@ -86,7 +86,7 @@ export async function filterUnplayables(tracks) {
         }
     }
 
-    console.log('In function unplayables', unplayables)
+    // console.log('In function unplayables', unplayables)
 
     return unplayables;
 }

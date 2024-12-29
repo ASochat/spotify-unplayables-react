@@ -182,15 +182,12 @@ const App = (props) => {
               // console.log('Post then unplayables:', filterUnplayables(songs))
             })
           .catch(error => console.error('Failed to fetch all tracks', error))
-    
-        console.log('Post then unplayables, probably still waiting:', unplayables)
-    
+        
         Promise.all([profile, topTracks, allSongs, unplayables]).then(([profile, topTracks, allSongs, unplayables]) => {
           setLoading(false)
           console.log('Starting promise to pass all user data')
           setUserData({ fetched: true, profile, topTracks, allSongs, unplayables })
-          console.log('After Promise userData:', userData);
-          localStorage.setItem('user_data', JSON.stringify(userData));
+          localStorage.setItem('user_data', JSON.stringify({ fetched: true, profile, topTracks, allSongs, unplayables }));
         })
       })
       // Can't reuse the same user code, storing it local storage to avoid confusion
