@@ -161,14 +161,15 @@ const App = (props) => {
   //   setUserData(userData)
   // }, [])
 
+  const [loading, setLoading] = useState(false)
 
   // useEffect to run the code only once
   useEffect(() => {
     // Théoriquement, on aurait même pas besoin de faire un localStorage, il faut juste passer la variable à l'app
     // Ici on utilise userData.fetched mais il faudrait plutôt un évènement de refresher
     if (!userData.fetched && URLparamCode && !isCodeUsed) {
-      // REMOVED CONDITION (!accessToken || accessToken === 'undefined')
-      // since we use the accessToken only once - for now
+      // REMOVED CONDITION (!accessToken || accessToken === 'undefined') since we use the accessToken only once - for now
+      setLoading(true)
       console.log('Getting access token...')
       getAccessToken(appClientId, URLparamCode, redirectUrl).then(accessToken => {
         const profile = fetchProfile(accessToken)
@@ -185,6 +186,7 @@ const App = (props) => {
         console.log('Post then unplayables, probably still waiting:', unplayables)
     
         Promise.all([profile, topTracks, allSongs, unplayables]).then(([profile, topTracks, allSongs, unplayables]) => {
+          setLoading(false)
           console.log('Starting promise to pass all user data')
           setUserData({ fetched: true, profile, topTracks, allSongs, unplayables })
           console.log('After Promise userData:', userData);
@@ -213,10 +215,10 @@ const App = (props) => {
       <h1>Display your Spotify profile data</h1>
 
       <Connecter onClick={connectToSpotify}/> {/* Find a a way to hide if existing userData or change to REFRESH DATA */}
-      <Profile profile={userData.profile}/>
-      <TopTracks topTracks={userData.topTracks}/>
+      {/* <Profile profile={userData.profile}/> */}
+      {/* <TopTracks topTracks={userData.topTracks}/> */}
+      <Progress colour={'#1ed760'} percentage={percentage} loading={loading}/> {/* Ideally I should use a colour variable primary instead of hard coding */}
       <UnplayableTracks unplayables={userData.unplayables}/>
-      <Progress colour={'#1ed760'} percentage={percentage}/>
 
       <br/>
     </>

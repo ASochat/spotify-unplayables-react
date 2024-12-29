@@ -1,4 +1,4 @@
-const Progress = ({ colour, percentage }) => {  
+const Progress = ({ colour, percentage, loading }) => {  
 
     const cleanPercentage = (percentage) => {
         const isNegativeOrNaN = !Number.isFinite(+percentage) || percentage < 0; // we can set non-numbers to 0 here
@@ -17,7 +17,7 @@ const Progress = ({ colour, percentage }) => {
         cy={100}
         fill="transparent"
         stroke={strokePct !== circ ? colour : ""} // remove colour as 0% sets full circumference
-        strokeWidth={"2rem"}
+        strokeWidth={"1rem"}
         strokeDasharray={circ}
         strokeDashoffset={percentage ? strokePct : 0}
         ></circle>
@@ -39,12 +39,14 @@ const Progress = ({ colour, percentage }) => {
     };
     
     const pct = cleanPercentage(percentage);
+    const display = loading ? '' : 'd-none';
+    // console.log('loading: ', loading);
       
     return (
-        <div>
+        <div className={"mt-5" + " " + display}>
             <svg width={200} height={200}>
                 <g transform={`rotate(-90 ${"100 100"})`}>
-                    <Circle colour="lightgrey" />
+                    <Circle colour="transparent" />
                     <Circle colour={colour} percentage={pct} />
                 </g>
                 <Text percentage={pct} />
