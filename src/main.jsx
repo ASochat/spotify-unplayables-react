@@ -23,6 +23,13 @@
 // - Remove ?code= after it is fetched (window.location just refreshed infinitely)
 //
 // - Use effect-hooks (use effect) instead of main to connect to Spotify. And use JSON server to store the data instead of localStorage? Yes but it's not the same data for everyone
+//
+// - Get the number of times it has been used, and save that to the server
+//
+// - Loading circle: we don't have the number of tracks. There may be a way to get the first and last track, with a check a dichotomy, but 
+// for now we just use a dummy loading bar based on 3000 songs saved. 
+//
+// - Add a comment interface
 ////////////////////////////////////////////////////////////////
 
 

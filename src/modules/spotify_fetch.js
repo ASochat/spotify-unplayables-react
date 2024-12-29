@@ -28,6 +28,10 @@ export async function fetchTopTracks(token) {
     return tracks;
 }
 
+async function returnOffset(offset) {
+    return offset;
+}
+
 export async function fetchAllSongs(token) {
 
     let offset = 1600;
@@ -63,6 +67,8 @@ export async function fetchAllSongs(token) {
 
         batchSize = items.length;
         offset += batchSize;
+
+        // returnOffset(offset); // This doesn't work
     }
 
     return tracks;

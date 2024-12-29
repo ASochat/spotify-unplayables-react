@@ -77,6 +77,8 @@ const TopTracks = (props) => {
 
 const UnplayableTracks = (props) => {
 
+  // console.log('unplayables', props);
+
   return (
     <div className="container mt-5">
       <h2>Your unplayable tracks</h2>
@@ -119,7 +121,7 @@ const App = (props) => {
   // console.log('App props: ', props)
 
   const appClientId = 'e61711cbd130408abf2d471288b77e87';
-  const redirectUrl = 'http://localhost:5174/'
+  const redirectUrl = 'http://localhost:5173/'
   // .env variables should defined as this but it doesn't work for now.
   // const appClientId = env.spotifyAppClientId;
   // const redirectUrl = env.redirectUrl; // IMPORTANT: IT HAS TO BE A REDIRECT URI ON THE APP SETTINGS ONLINE
@@ -196,10 +198,14 @@ const App = (props) => {
 
   const [percentage, setPercentage] = useState(0)
 
-  setTimeout(
-    () => setPercentage(percentage + 5),
-    2000
-  )
+  useEffect(() => {
+    if (percentage < 95) {
+      setTimeout(
+        () => setPercentage(percentage + 5),
+        500
+      )
+    }
+  })
 
   return (
     <>
