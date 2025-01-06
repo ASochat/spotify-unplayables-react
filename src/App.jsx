@@ -6,6 +6,7 @@
 console.log('START APP.JSX')
 
 import { useEffect, useState } from 'react'
+import axios from 'axios'
 
 // Import created modules
 import { redirectToAuthCodeFlow, getAccessToken } from './modules/spotify_connect'
@@ -195,8 +196,8 @@ const App = (props) => {
     } 
   })
 
+  // Progress percentage
   const [percentage, setPercentage] = useState(0)
-
   useEffect(() => {
     if (percentage < 95) {
       setTimeout(
@@ -205,6 +206,41 @@ const App = (props) => {
       )
     }
   })
+
+  // Number of times fetching
+  const [fetchings, setFetchings] = useState(0)
+  // useEffect(() => {
+  //   console.log('effect')
+  //   axios
+  //     .get('http://localhost:3001/notes')
+  //     .then(response => {
+  //       console.log('promise fulfilled')
+  //       setNotes(response.data)
+  //     })
+  // }, [])
+
+  // const addNote = (event) => {
+  //   event.preventDefault(); // Apparently not necessary if we have an onChange but that doesn't fait du mal
+  //   console.log('button clicked', event.target.value)
+
+  //   const noteObject = {
+  //     content: newNote,
+  //     important: Math.random() < 0.5, // 50% chance of being true
+  //     id: String(notes.length + 1),
+  //   }
+
+  //   // setNotes(notes.concat(noteObject))
+  //   // setNewNote('')
+
+  //   // Posting the new note to the JSON server and setting the note here in the const too
+  //   axios
+  //     .post('http://localhost:3001/notes', noteObject)
+  //     .then(response => {
+  //       setNotes(notes.concat(response.data))
+  //       setNewNote('')
+  //     })
+  
+  // }
 
   return (
     <>
