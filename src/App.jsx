@@ -121,12 +121,16 @@ const UnplayableTracks = (props) => {
 const App = (props) => {
   // console.log('App props: ', props)
 
-  const appClientId = 'e61711cbd130408abf2d471288b77e87';
-  const redirectUrl = 'http://localhost:5173/'
-  // .env variables should defined as this but it doesn't work for now.
-  // const appClientId = env.spotifyAppClientId;
-  // const redirectUrl = env.redirectUrl; // IMPORTANT: IT HAS TO BE A REDIRECT URI ON THE APP SETTINGS ONLINE
-  
+  // Vite can't use process.env, but uses import.meta.env instead.
+  // IMPORTANT: .env variables have to start with 'VITE'
+  const appClientId = import.meta.env.VITE_SPOTIFY_APP_CLIENT_ID;
+  const redirectUrl = import.meta.env.VITE_REDIRECT_URL;
+//  useEffect(() => {
+//     console.log('AppClientId:', appClientId);
+//     console.log('RedirectUrl:', redirectUrl);
+//     console.log('import meta env:', import.meta.env);
+//   })
+
   // Actually we could get rid of the access token code here if we store the data and don't fetch it twice...
   const accessToken = localStorage.getItem("access_token");
   // console.log("Access token is stored at: " + accessToken);
