@@ -123,8 +123,12 @@ const App = (props) => {
 
   // Vite can't use process.env, but uses import.meta.env instead.
   // IMPORTANT: .env variables have to start with 'VITE'
-  const appClientId = import.meta.env.VITE_SPOTIFY_APP_CLIENT_ID;
-  const redirectUrl = import.meta.env.VITE_REDIRECT_URL;
+  const appClientId = import.meta.env.VITE_ENV = 'development' ? 
+    import.meta.env.VITE_SPOTIFY_APP_CLIENT_ID_DEV
+    : process.env.SPOTIFY_APP_CLIENT_ID;
+  const redirectUrl = import.meta.env.VITE_ENV = 'development' ? 
+    import.meta.env.VITE_REDIRECT_URL_DEV 
+    : process.env.REDIRECT_URL_PROD;
 //  useEffect(() => {
 //     console.log('AppClientId:', appClientId);
 //     console.log('RedirectUrl:', redirectUrl);
