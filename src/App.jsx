@@ -13,16 +13,18 @@ import { redirectToAuthCodeFlow, getAccessToken } from './modules/spotify_connec
 import { fetchAllSongs, fetchProfile, fetchTopTracks, filterUnplayables } from './modules/spotify_fetch.js'
 
 // Import Bootstrap components
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { Table, Form, Button } from 'react-bootstrap'
+// import 'bootstrap/dist/css/bootstrap.min.css'; // Hmmm... This is only for CSS, NOT Sass. Necessary?
 import './App.scss'
+import { Table, Form, Button } from 'react-bootstrap'
+
+// Import created components
 import Progress from './assets/Progress.jsx'
 
 const Connecter = (props) => {
 
   return (
     <div className="mt-5">
-      <Button variant="primary" size="lg" className="btn btn-outline-primary" onClick={props.onClick}>
+      <Button variant="primary" size="lg" onClick={props.onClick}>
         <span className="text-dark">Connect to Spotify to fetch your data</span>
       </Button>
     </div>

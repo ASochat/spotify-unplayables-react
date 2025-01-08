@@ -1,5 +1,5 @@
 // @import 'bootstrap/scss/bootstrap';
-@import './custom.scss';
+@use './custom.scss';
 
 #root {
   max-width: 1280px;

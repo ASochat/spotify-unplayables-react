@@ -7,8 +7,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "devbuilt": "nodemon --env-file=.env index.cjs",
-    "start": "node --env-file=.env index.cjs",
+    "devbuilt": "nodemon index.cjs",
+    "start": "node index.cjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "preinstall": "npx npm-force-resolutions"

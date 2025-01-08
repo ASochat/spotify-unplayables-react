@@ -50,26 +50,6 @@ import { fetchAllSongs, fetchProfile, fetchTopTracks, filterUnplayables } from '
 
 let refreshCounter = 0;
 
-
-////// TRYING TO GET END VARIABLES ///////
-// dotenv doesn't work because process it not defined and I'm tired of it.  
-// try {
-//   dotenv.config()
-// } catch (error) {
-//   console.error('Error loading .env file:', error)
-// }
-// console.log(process.env);
-
-// THIS DOESN'T WORK EITHER, the loaded env is not the one I chose (and btw I don't know where it found it)
-// const env = await import.meta.env;
-// console.log(env)
-// console.log(BASE_URL, env.BASE_URL);
-// console.log(SPOTIFY_APP_CLIENT_ID, env.SPOTIFY_APP_CLIENT_ID);
-
-//==> My best take is that main.jsx loads from the frontend, and process is a backend variable. I just need to advance in the course to set up the server side of react
-
-// There should be something here to check token with a try/catch
-
 const refresh = () => {
   // refreshCounter += 1;
   // console.log('refreshing the app:', refreshCounter)
@@ -81,11 +61,4 @@ const refresh = () => {
 }
 
 refresh();
-
-// Making repeated calls to the render method is not the recommended way to re-render components.
-// It works, but it's not the best
-// setInterval(() => {
-//   refresh()
-//   counter += 1
-// }, 1000)
 

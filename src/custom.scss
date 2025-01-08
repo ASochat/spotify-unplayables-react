@@ -1,7 +1,8 @@
-/* make the customizations */
+/* Make the customizations */
 
-//$primary: #4bdb53;
-$primary: #1ed760;
+// $primary: #4bdb53;
+// $primary: #1ed760;
+$primary-color: #1ed760;
 $secondary: #ffffff;
 
 $body-bg: #eaeaea;
@@ -12,11 +13,17 @@ $button-color: #38b85d;
 $theme-colors: (
   'info': tomato,
   'danger': teal,
-  'primary': $primary,
-  'bg-primary': $primary,
+  'primary': $primary-color,
+  'bg-primary': $primary-color,
   'bg-secondary': $secondary,
 );
 
-/* import bootstrap to set changes */
-@import 'bootstrap/scss/bootstrap';
+// Include variables and mixins
+// @import "../node_modules/bootstrap/scss/functions";
+// @import "../node_modules/bootstrap/scss/variables";
+// @import "../node_modules/bootstrap/scss/mixins";
+@import "../node_modules/bootstrap/scss/bootstrap";
+// @use '~bootstrap/scss/bootstrap' // @use if we don't give the path
+// @import "bootstrap/scss/bootstrap";
+
 
