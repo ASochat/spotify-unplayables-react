@@ -123,17 +123,23 @@ const App = (props) => {
 
   // Vite can't use process.env, but uses import.meta.env instead.
   // IMPORTANT: .env variables have to start with 'VITE'
-  const appClientId = import.meta.env.VITE_ENV = 'development' ? 
-    import.meta.env.VITE_SPOTIFY_APP_CLIENT_ID_DEV
-    : process.env.SPOTIFY_APP_CLIENT_ID;
-  const redirectUrl = import.meta.env.VITE_ENV = 'development' ? 
-    import.meta.env.VITE_REDIRECT_URL_DEV 
-    : process.env.REDIRECT_URL_PROD;
-//  useEffect(() => {
-//     console.log('AppClientId:', appClientId);
-//     console.log('RedirectUrl:', redirectUrl);
-//     console.log('import meta env:', import.meta.env);
-//   })
+
+  // impossible  de définir appClientId et redirectUrl comme des constantes dans le build et je n'ai aucune idée pourquoi
+  let appClientId = '';
+  let redirectUrl = '';
+  const environment = import.meta.env.MODE;
+  // console.log('import meta env:', import.meta.env);
+
+  if (environment == 'development') {
+    appClientId = import.meta.env.VITE_SPOTIFY_APP_CLIENT_ID_DEV
+    redirectUrl = import.meta.env.VITE_REDIRECT_URL_DEV 
+  } else {
+    appClientId = import.meta.env.VITE_SPOTIFY_APP_CLIENT_ID_PROD
+    redirectUrl = import.meta.env.VITE_REDIRECT_URL_PROD 
+  }
+
+  // console.log(appClientId, redirectUrl);
+
 
   // Actually we could get rid of the access token code here if we store the data and don't fetch it twice...
   const accessToken = localStorage.getItem("access_token");
