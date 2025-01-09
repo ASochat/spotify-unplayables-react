@@ -24,12 +24,12 @@ const Connecter = (props) => {
 
   const display = props.loading ? 'd-none' : ''
   const variant = props.userData.fetched ? 'outline-primary' : 'primary'
-  const text = props.userData.fetched ? 'Refresh your data' : 'Connect to Spotify to fetch your data'
+  const text = props.userData.fetched ? 'Refresh your data' : 'Connect to Spotify to fetch your songs'
 
   return (
     <div className={"mt-5 " + display}>
-      <Button variant={variant} size="lg" onClick={props.onClick}>
-        <span className="text-dark">{text}</span>
+      <Button variant={variant} size="lg" className="btn-custom" onClick={props.onClick}>
+        <span>{text}</span>
       </Button>
     </div>
   )
@@ -91,9 +91,11 @@ const UnplayableTracks = (props) => {
   return (
     <div className={"container mt-5 " + display}>
       <h2>Here are your unplayable tracks, {userName}</h2>
-      <p>Please note that we don't fetch your local files in your saved tracks.
-        Therefore, the number on each track may not be the right one- it still gives an indication on its place in your list.
-      </p>
+      <div className="mt-4 mb-5 paragraph">
+        <span><i>Please note that we don't fetch your local files in your saved tracks.
+          Therefore, the number on each track may not be the right one- it still gives an indication on its place in your list.
+        </i></span>
+      </div>
       {/* Bootstrap built in Table component */}
       <Table striped>
           <thead>
@@ -208,7 +210,6 @@ const App = (props) => {
         
         Promise.all([profile, topTracks, allSongs, unplayables]).then(([profile, topTracks, allSongs, unplayables]) => {
           setLoading(false)
-          setLoaded(true)
           console.log('Starting promise to pass all user data')
           setUserData({ fetched: true, profile, topTracks, allSongs, unplayables })
           localStorage.setItem('user_data', JSON.stringify({ fetched: true, profile, topTracks, allSongs, unplayables }));
@@ -269,7 +270,15 @@ const App = (props) => {
     <>
       <div className="container">
         <div className="row">
-          <h1>Display your Spotify profile data</h1>
+          <h1>Find your <i>greyed out</i> saved songs that are no longer on Spotify</h1>
+        </div>
+        <div className="row mt-5">
+          <p><b>Why this website?</b> If you're like me, you probably have more than 2000 saved tracks on Spotify. 
+            And you may have realized that songs keep disappearing from your list.
+            This happens for various reasons: the artist quit the platform or published a remastered album, for example. 
+            But searching for those greyed out songs manually to replace them takes too much time. 
+            So <b>I created this tool to connect to Spotify API and fetch them all at once</b>. 
+            I hope it will be as helpful for you as it is for me! Cheers, Soch.</p>
         </div>
         {/* <Profile profile={userData.profile}/> */}
         {/* <TopTracks topTracks={userData.topTracks}/> */}
@@ -279,6 +288,9 @@ const App = (props) => {
         </div>
         <div className="row">
           <Connecter onClick={connectToSpotify} loading={loading} userData={userData}/> {/* Find a a way to hide if existing userData or change to REFRESH DATA */}
+        </div>
+        <div className="row mt-5 thanks">
+          <p>Made with love by Antoine Sochat. Website: <a href="https://soch.at">soch.at</a>. Any suggestion: antoine@soch.at</p>
         </div>
         <br/>
       </div>
