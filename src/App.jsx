@@ -165,17 +165,21 @@ const App = (props) => {
   // I had to define all userData properties since they are used in App.jsx. 
   // There's probably a better way, either through class, or JSON loading
   // Since it's the data per user, it should be stored in a JSON server, encapsulated for each user, and not local storaged
+  const emptyUserData = { 
+    fetched: false,
+    profile: {displayName: '', email: '', country:'', external_urls: {spotify: ''}, images: []}, 
+    topTracks: [], 
+    allSongs: [], 
+    unplayables: [],
+  }
+
   let initUserData = localStorage.getItem('user_data')?
     JSON.parse(localStorage.getItem('user_data'))
-    : { 
-      fetched: false,
-      profile: {displayName: '', email: '', country:'', external_urls: {spotify: ''}, images: []}, 
-      topTracks: [], 
-      allSongs: [], 
-      unplayables: [],
-    }
+    : emptyUserData;
 
   const connectToSpotify = () => {
+    localStorage.removeItem('user_data');
+    setUserData(emptyUserData);
     redirectToAuthCodeFlow(appClientId, redirectUrl)
   }
 
@@ -219,6 +223,9 @@ const App = (props) => {
       localStorage.setItem('spotify_user_code', URLparamCode);
     } 
   })
+
+  // const test = new Date("2020-05-12T23:50:21.817Z");
+  // console.log(test, test.toLocaleDateString());
 
   // Progress percentage
   const [percentage, setPercentage] = useState(0)

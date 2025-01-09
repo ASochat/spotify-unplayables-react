@@ -57,7 +57,8 @@ export async function fetchAllSongs(token) {
         newTracks = items.slice(0, 50).map((item) => ({
             artist: item.track.artists.map((_artist) => _artist.name).join(', '),
             title: item.track.name,
-            added_at: item.added_at,
+            added_at: item.added_at.split('T')[0],
+            songUrl: item.track.external_urls.spotify,
             is_playable: item.track.is_playable,
           }))
 
