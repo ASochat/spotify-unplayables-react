@@ -43,14 +43,17 @@ const Progress = ({ colour, percentage, loading }) => {
     // console.log('loading: ', loading);
       
     return (
-        <div className={"mt-5" + " " + display}>
-            <svg width={200} height={200}>
-                <g transform={`rotate(-90 ${"100 100"})`}>
-                    <Circle colour="transparent" />
-                    <Circle colour={colour} percentage={pct} />
-                </g>
-                <Text percentage={pct} />
-            </svg>
+        <div>
+            <div className={"mt-5" + " " + display}>
+                <div className="">Your data is loading...</div>
+                <svg width={200} height={200}>
+                    <g transform={`rotate(-90 ${"100 100"})`}>
+                        <Circle colour="transparent" />
+                        <Circle colour={colour} percentage={pct} />
+                    </g>
+                    <Text percentage={pct} />
+                </svg>
+            </div>
         </div>
     )
 }

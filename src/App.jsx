@@ -22,10 +22,14 @@ import Progress from './assets/Progress.jsx'
 
 const Connecter = (props) => {
 
+  const display = props.loading ? 'd-none' : ''
+  const variant = props.userData.fetched ? 'outline-primary' : 'primary'
+  const text = props.userData.fetched ? 'Refresh your data' : 'Connect to Spotify to fetch your data'
+
   return (
-    <div className="mt-5">
-      <Button variant="primary" size="lg" onClick={props.onClick}>
-        <span className="text-dark">Connect to Spotify to fetch your data</span>
+    <div className={"mt-5 " + display}>
+      <Button variant={variant} size="lg" onClick={props.onClick}>
+        <span className="text-dark">{text}</span>
       </Button>
     </div>
   )
@@ -81,10 +85,12 @@ const TopTracks = (props) => {
 const UnplayableTracks = (props) => {
 
   // console.log('unplayables', props);
+  const userName = props.userData.profile.display_name;
+  const display = props.userData.fetched ? '' : 'd-none';
 
   return (
-    <div className="container mt-5">
-      <h2>Your unplayable tracks</h2>
+    <div className={"container mt-5 " + display}>
+      <h2>Here are your unplayable tracks, {userName}</h2>
       <p>Please note that we don't fetch your local files in your saved tracks.
         Therefore, the number on each track may not be the right one- it still gives an indication on its place in your list.
       </p>
@@ -99,12 +105,12 @@ const UnplayableTracks = (props) => {
               </tr>
           </thead>    
           <tbody>
-          <tr>
+          {/* <tr>
               <td>0</td>
               <td>The Kops</td>
               <td>Halloween</td>
               <td>2010-01-01</td>
-          </tr>
+          </tr> */}
           { props.unplayables.map(track => 
           <tr key={track.number}>
               <td >{track.number}</td>
@@ -202,6 +208,7 @@ const App = (props) => {
         
         Promise.all([profile, topTracks, allSongs, unplayables]).then(([profile, topTracks, allSongs, unplayables]) => {
           setLoading(false)
+          setLoaded(true)
           console.log('Starting promise to pass all user data')
           setUserData({ fetched: true, profile, topTracks, allSongs, unplayables })
           localStorage.setItem('user_data', JSON.stringify({ fetched: true, profile, topTracks, allSongs, unplayables }));
@@ -264,14 +271,14 @@ const App = (props) => {
         <div className="row">
           <h1>Display your Spotify profile data</h1>
         </div>
-        <div className="row">
-          <Connecter onClick={connectToSpotify}/> {/* Find a a way to hide if existing userData or change to REFRESH DATA */}
-        </div>
         {/* <Profile profile={userData.profile}/> */}
         {/* <TopTracks topTracks={userData.topTracks}/> */}
         <div className="row">
           <Progress colour={'#1ed760'} percentage={percentage} loading={loading}/> {/* Ideally I should use a colour variable primary instead of hard coding */}
-          <UnplayableTracks unplayables={userData.unplayables}/>
+          <UnplayableTracks unplayables={userData.unplayables} userData={userData}/>
+        </div>
+        <div className="row">
+          <Connecter onClick={connectToSpotify} loading={loading} userData={userData}/> {/* Find a a way to hide if existing userData or change to REFRESH DATA */}
         </div>
         <br/>
       </div>
