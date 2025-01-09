@@ -1,6 +1,10 @@
 // @import 'bootstrap/scss/bootstrap';
 @use './custom.scss';
 
+body {
+  // font-size: 1.5em;
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -36,10 +40,3 @@
   }
 }
 
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}

@@ -260,16 +260,21 @@ const App = (props) => {
 
   return (
     <>
-
-      <h1>Display your Spotify profile data</h1>
-
-      <Connecter onClick={connectToSpotify}/> {/* Find a a way to hide if existing userData or change to REFRESH DATA */}
-      {/* <Profile profile={userData.profile}/> */}
-      {/* <TopTracks topTracks={userData.topTracks}/> */}
-      <Progress colour={'#1ed760'} percentage={percentage} loading={loading}/> {/* Ideally I should use a colour variable primary instead of hard coding */}
-      <UnplayableTracks unplayables={userData.unplayables}/>
-
-      <br/>
+      <div className="container">
+        <div className="row">
+          <h1>Display your Spotify profile data</h1>
+        </div>
+        <div className="row">
+          <Connecter onClick={connectToSpotify}/> {/* Find a a way to hide if existing userData or change to REFRESH DATA */}
+        </div>
+        {/* <Profile profile={userData.profile}/> */}
+        {/* <TopTracks topTracks={userData.topTracks}/> */}
+        <div className="row">
+          <Progress colour={'#1ed760'} percentage={percentage} loading={loading}/> {/* Ideally I should use a colour variable primary instead of hard coding */}
+          <UnplayableTracks unplayables={userData.unplayables}/>
+        </div>
+        <br/>
+      </div>
     </>
   )
 }

@@ -24,6 +24,6 @@ Any suggestions? File an issue or contact me directly at antoine@soch.at.
 
 - Add a comment interface below. 
 
-- sass compile in build mode: https://blog.logrocket.com/using-bootstrap-react-tutorial-examples/
+- Use TailWind CSS instead of bootstrap and use a template
 
 //////////////////////////
