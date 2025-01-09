@@ -86,11 +86,12 @@ const UnplayableTracks = (props) => {
 
   // console.log('unplayables', props);
   const userName = props.userData.profile.display_name;
+  const unplayablesNumber = props.userData.unplayables.length;
   const display = props.userData.fetched ? '' : 'd-none';
 
   return (
     <div className={"container mt-5 " + display}>
-      <h2>Here are your unplayable tracks, {userName}</h2>
+      <h2>You have {unplayablesNumber} unplayable tracks, {userName}</h2>
       <div className="mt-4 mb-5 paragraph">
         <span><i>Please note that we don't fetch your local files in your saved tracks.
           Therefore, the number on each track may not be the right one- it still gives an indication on its place in your list.
