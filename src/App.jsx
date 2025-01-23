@@ -5,12 +5,14 @@
 
 console.log('START APP.JSX')
 
+// Global imports
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
 // Import created modules
 import { redirectToAuthCodeFlow, getAccessToken } from './modules/spotify_connect'
 import { fetchAllSongs, fetchProfile, fetchTopTracks, filterUnplayables } from './modules/spotify_fetch.js'
+import { enrichSongsWithLyricsAndLanguage } from './modules/lyrics_and_language.js'
 
 // Import Bootstrap components
 // import 'bootstrap/dist/css/bootstrap.min.css'; // Hmmm... This is only for CSS, NOT Sass. Necessary?
@@ -193,6 +195,9 @@ const App = (props) => {
 
   const [loading, setLoading] = useState(false)
 
+  // Genius API access token
+  const geniusAccessToken = "ttj7Va38CTTmfXsSME2NYWWOyYsGzV4OyHH9XY83UTwQPNBvHPC-nJmfEDeS1i67";
+
   // useEffect to run the code only once
   useEffect(() => {
     // Théoriquement, on aurait même pas besoin de faire un localStorage, il faut juste passer la variable à l'app
@@ -209,9 +214,16 @@ const App = (props) => {
           .then(songs => { 
             const filteredUnplayables = filterUnplayables(songs);
             return filteredUnplayables;
-              // console.log('Post then unplayables:', filterUnplayables(songs))
+            // console.log('Post then unplayables:', filterUnplayables(songs))
             })
-          .catch(error => console.error('Failed to fetch all tracks', error))
+          .catch(error => console.error('Failed to fetch all tracks and filter unplayables', error))
+        const enrichedSongs = allSongs
+          .then(songs => { 
+            const enrichedSongs = enrichSongsWithLyricsAndLanguage(songs, geniusAccessToken);
+            return enrichedSongs;
+            console.log('Enriched songs:', enrichedSongs)
+            })
+          .catch(error => console.error('Failed to fetch all tracks and enrich them with lyrics and language', error))
         
         Promise.all([profile, topTracks, allSongs, unplayables]).then(([profile, topTracks, allSongs, unplayables]) => {
           setLoading(false)
@@ -271,8 +283,6 @@ const App = (props) => {
   //       setNotes(notes.concat(response.data))
   //       setNewNote('')
   //     })
-  
-  // }
 
   return (
     <>

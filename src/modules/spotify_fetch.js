@@ -34,7 +34,7 @@ async function returnOffset(offset) {
 
 export async function fetchAllSongs(token) {
 
-    let offset = 1800;
+    let offset = 1895;
     let batchSize = 50; 
     var tracks = [];
     var newTracks = [];  // Holds new batch of tracks
@@ -92,28 +92,3 @@ export async function filterUnplayables(tracks) {
 
     return unplayables;
 }
-
-
-export async function fetchLyricsAndDetectLanguage(track, artist) {
-    const BASE_MATCH_URL = "https://api.musixmatch.com/ws/1.1/matcher.lyrics.get";
-
-    try {
-        const params = {
-            q_track: track,
-      q_artist: artist,
-      apikey: "YOUR_API_KEY",
-    };
-
-    const response = await axios.get(BASE_MATCH_URL, { params });
-
-    if (response.status === 200) {
-      const data = response.data;
-      const lyrics = String(data.message.body.lyrics.lyrics_body);
-      console.log(franc(lyrics));
-    } else {
-      console.log("Failed to fetch lyrics, status code:", response.status);
-    }
-    } catch (error) {
-        console.error("Error fetching lyrics:", error.message);
-    }
-};
