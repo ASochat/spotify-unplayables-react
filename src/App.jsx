@@ -7,7 +7,7 @@ console.log('START APP.JSX')
 
 // Global imports
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+// import axios from 'axios'
 
 // Import created modules
 import { redirectToAuthCodeFlow, getAccessToken } from './modules/spotify_connect'
@@ -218,18 +218,21 @@ const App = (props) => {
             })
           .catch(error => console.error('Failed to fetch all tracks and filter unplayables', error))
         const enrichedSongs = allSongs
-          .then(songs => { 
-            const enrichedSongs = enrichSongsWithLyricsAndLanguage(songs, geniusAccessToken);
-            return enrichedSongs;
-            console.log('Enriched songs:', enrichedSongs)
-            })
-          .catch(error => console.error('Failed to fetch all tracks and enrich them with lyrics and language', error))
+          .then(async songs => { 
+            const enrichedResults = await enrichSongsWithLyricsAndLanguage(songs, geniusAccessToken);
+            console.log('Finished processing all songs');
+            return enrichedResults;
+          })
+          .catch(error => {
+            console.error('Failed to fetch all tracks and enrich them:', error);
+            return []; // Return empty array on error to prevent undefined
+          });
         
-        Promise.all([profile, topTracks, allSongs, unplayables]).then(([profile, topTracks, allSongs, unplayables]) => {
+        Promise.all([profile, topTracks, allSongs, unplayables, enrichedSongs]).then(([profile, topTracks, allSongs, unplayables, enrichedSongs]) => {
           setLoading(false)
           console.log('Starting promise to pass all user data')
-          setUserData({ fetched: true, profile, topTracks, allSongs, unplayables })
-          localStorage.setItem('user_data', JSON.stringify({ fetched: true, profile, topTracks, allSongs, unplayables }));
+          setUserData({ fetched: true, profile, topTracks, allSongs, unplayables, enrichedSongs })
+          localStorage.setItem('user_data', JSON.stringify({ fetched: true, profile, topTracks, allSongs, unplayables, enrichedSongs }));
         })
       })
       // Can't reuse the same user code, storing it local storage to avoid confusion

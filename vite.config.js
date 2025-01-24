@@ -18,4 +18,14 @@ export default defineConfig({
     //   },
     //  })
   ],
+  // Initially, I set up a proxy server to avoid rate limiting, but we used limitations of the package genius-lyrics-api instead
+  // server: {
+  //   proxy: {
+  //     '/api/genius': {
+  //       target: 'https://api.genius.com',
+  //       changeOrigin: true,
+  //       rewrite: (path) => path.replace(/^\/api\/genius/, ''),
+  //     }
+  //   }
+  // }
 })

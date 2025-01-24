@@ -7,8 +7,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "devbuilt": "nodemon index.cjs",
-    "start": "node index.cjs",
+    "devbuilt": "nodemon server/index.cjs",
+    "start": "node server/index.cjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "preinstall": "npx npm-force-resolutions"
@@ -17,11 +17,8 @@
     "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
     "cheerio": "^1.0.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
     "express": "^4.21.2",
     "franc-min": "^6.2.0",
-    "genius-lyrics-api": "^3.2.1",
     "iso-639-3": "^3.0.1",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.7",
@@ -39,7 +36,6 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
     "globals": "^15.12.0",
-    "nodemon": "^3.1.9",
     "react-error-overlay": "^6.0.9",
     "react-scripts": "^5.0.1",
     "vite": "^6.0.1"

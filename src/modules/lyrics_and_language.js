@@ -1,15 +1,20 @@
-// Import for Genius API + Language detection
-import { getSong } from 'genius-lyrics-api'
+
 import { load } from "cheerio"
 import { franc } from 'franc-min'
 import { iso6393 } from 'iso-639-3'
 import stringSimilarity from 'string-similarity'
+import axios from 'axios'
+// We're using our own Genius API wrapper instead of genius-lyrics-api
+import { searchSong } from './genius_api'
+// import { getSong } from 'genius-lyrics-api'
 
 const scrapeLyrics = async (url) => {
   try {
-    const { data } = await axios.get(url);
+    // Use our proxy server instead of direct Genius URL
+    const response = await axios.get(`http://localhost:3000/api/lyrics?url=${encodeURIComponent(url)}`);
+    const html = response.data;
 
-    const $ = load(data);
+    const $ = load(html);
 
     let lyrics = "";
 
@@ -30,7 +35,8 @@ const scrapeLyrics = async (url) => {
     return lyrics.trim();
   } catch (error) {
     console.error("Error while scraping:", error.message);
-    return null;
+    // return null;
+    throw error;
   }
 };
 
@@ -49,76 +55,108 @@ const getLanguage = async (lyrics) => {
     // return language;
 };
 
-// Convert forEach to map and use Promise.all to wait for all operations to complete
-export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessToken) {
+// Create a custom version of getSong that includes rate limiting
+const getSongWithRetry = async (options, retryCount = 0) => {
+    try {
+        const result = await searchSong(options);
+        return result;
+    } catch (error) {
+        // If we hit rate limit (429) and haven't retried too many times
+        if (error.response?.status === 429 && retryCount < 3) {
+            // Wait for 2 seconds before retrying
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            return searchSongWithRetry(options, retryCount + 1);
+        }
+        throw error;
+    }
+};
 
-    const enrichedSongs = await Promise.all(
-        songsList.map(async (song) => {
-            const options = {
-                apiKey: geniusAccessToken,
-                title: song.title,
-                artist: song.artist,
-                optimizeQuery: true
-            };
-            
-            try {
-                const geniusSong = await getSong(options);
-                if (geniusSong && geniusSong.url) {
-                    const geniusTitle = geniusSong.title;
-                    const geniusTitleCoherence = await getCoherenceScore(song.title+' by '+song.artist, geniusSong.title);
-                    // const geniusArtist = geniusSong.primary_artist.name;
-                    const geniusDeemedCoherent = geniusTitleCoherence > 0.3;
+export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessToken) {
+    // Process songs in smaller batches to avoid rate limiting
+    const batchSize = 5;
+    const enrichedSongs = [];
+
+    for (let i = 0; i < songsList.length; i += batchSize) {
+        console.log('Processing songs enrichment batch', i);
+        const batch = songsList.slice(i, i + batchSize);
+        
+        // Add delay between batches
+        if (i > 0) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        const batchResults = await Promise.all(
+            batch.map(async (song) => {
+                const options = {
+                    apiKey: geniusAccessToken,
+                    title: song.title,
+                    artist: song.artist,
+                    optimizeQuery: true
+                };
+                
+                try {
+                    const geniusSong = await getSongWithRetry(options);
+                    if (geniusSong && geniusSong.url) {
+                        const geniusTitle = geniusSong.title;
+                        const geniusTitleCoherence = await getCoherenceScore(song.title+' by '+song.artist, geniusSong.title);
+                        const geniusDeemedCoherent = geniusTitleCoherence > 0.3;
+                        
                         if (!geniusDeemedCoherent) {
                             return {
-                            ...song,
-                            geniusTitle,
-                            geniusTitleCoherence,
-                            geniusDeemedCoherent,
-                            lyrics: "Genius deemed incoherent",
-                            language: "Genius deemed incoherent"
-                        };
-                    }
-                    const lyrics = await scrapeLyrics(geniusSong.url);
+                                ...song,
+                                geniusTitle,
+                                geniusTitleCoherence,
+                                geniusDeemedCoherent,
+                                lyrics: "Genius deemed incoherent",
+                                language: "Genius deemed incoherent"
+                            };
+                        }
+
+                        const lyrics = await scrapeLyrics(geniusSong.url);
                         try {
                             const language = await getLanguage(lyrics);
                             return {
-                            ...song,
-                            geniusTitle,
-                            geniusTitleCoherence,
-                            geniusDeemedCoherent,
-                            lyricsUrl: geniusSong.url,
-                            lyrics,
-                            language
-                        };
-                    } catch (error) {
-                        return {
-                            ...song,
-                            geniusTitle,
-                            geniusTitleCoherence,
-                            geniusDeemedCoherent,
-                            lyricsUrl: geniusSong.url,
-                            lyrics,
-                            language: 'Error getting language'
-                        };
+                                ...song,
+                                geniusTitle,
+                                geniusTitleCoherence,
+                                geniusDeemedCoherent,
+                                lyricsUrl: geniusSong.url,
+                                lyrics,
+                                language
+                            };
+                        } catch (error) {
+                            return {
+                                ...song,
+                                geniusTitle,
+                                geniusTitleCoherence,
+                                geniusDeemedCoherent,
+                                lyricsUrl: geniusSong.url,
+                                lyrics,
+                                language: 'Error getting language'
+                            };
+                        }
                     }
+                    return {
+                        ...song,
+                        lyrics: 'Genius doesn\'t have lyrics for this song',
+                        language: 'Genius doesn\'t have lyrics for this song'
+                    };
+                } catch (error) {
+                    console.error(`Error processing ${song.title}:`, error);
+                    return {
+                        ...song,
+                        lyrics: 'Error getting lyrics',
+                        language: 'Error getting lyrics'
+                    };
                 }
-                return {
-                    ...song,
-                    lyrics: 'Genius doesn\'t have lyrics for this song',
-                    language: 'Genius doesn\'t have lyrics for this song'
-                };
-            } catch (error) {
-                console.error(`Error processing ${song.title}:`, error);
-                return {
-                    ...song,
-                    lyrics: 'Error getting lyrics',
-                    language: 'Error getting lyrics'
-                };
-            }
-        })
-    );
+            })
+        );
 
-    // console.log(enrichedSongs);
+        enrichedSongs.push(...batchResults);
+        console.log(`Processed ${enrichedSongs.length} of ${songsList.length} songs`);
+    }
+    console.log("enrichedSongs", enrichedSongs)
     return enrichedSongs;
-};
+}
+
 
