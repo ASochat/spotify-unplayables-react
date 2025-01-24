@@ -7,6 +7,7 @@ console.log('START APP.JSX')
 
 // Global imports
 import { useEffect, useState } from 'react'
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 // import axios from 'axios'
 
 // Import created modules
@@ -20,10 +21,24 @@ import './App.scss'
 import { Table, Form, Button } from 'react-bootstrap'
 
 // Import created components
-import Progress from './assets/Progress.jsx'
+import Progress from './components/Progress.jsx'
+import LanguageAnalysis from './components/LanguageAnalysis.jsx'
+
+const Navigation = () => {
+  return (
+    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+      <div className="container">
+        {/* <Link className="navbar-brand" to="/">Spotify Unplayables</Link> */}
+        <div className="navbar-nav">
+          <Link className="nav-link" to="/">Home</Link>
+          <Link className="nav-link" to="/insights">Language Analysis</Link>
+        </div>
+      </div>
+    </nav>
+  )
+}
 
 const Connecter = (props) => {
-
   const display = props.loading ? 'd-none' : ''
   const variant = props.userData.fetched ? 'outline-primary' : 'primary'
   const text = props.userData.fetched ? 'Refresh your data' : 'Connect to Spotify to fetch your songs'
@@ -35,11 +50,9 @@ const Connecter = (props) => {
       </Button>
     </div>
   )
-
 }
 
 const Profile = (props) => {
-
   const profile = {
     userId: props.profile.display_name,
     country: props.profile.country,
@@ -70,7 +83,6 @@ const Profile = (props) => {
 }
 
 const TopTracks = (props) => {
-
   return (
     <div className="container mt-5">
       <h2>Your {props.topTracks.length} top tracks</h2>
@@ -81,11 +93,9 @@ const TopTracks = (props) => {
       </ul>
     </div>
   )
-
 }
 
 const UnplayableTracks = (props) => {
-
   // console.log('unplayables', props);
   const userName = props.userData.profile.display_name;
   const unplayablesNumber = props.userData.unplayables.length;
@@ -128,7 +138,6 @@ const UnplayableTracks = (props) => {
       </Table>
     </div>
   )
-
 }
 
 const App = (props) => {
@@ -289,32 +298,42 @@ const App = (props) => {
 
   return (
     <>
-      <div className="container">
-        <div className="row">
-          <h1>Find your <i>greyed out</i> saved songs that are no longer on Spotify</h1>
-        </div>
-        <div className="row mt-5">
-          <p><b>Why this website?</b> If you're like me, you probably have more than 2000 saved tracks on Spotify. 
-            And you may have realized that songs keep disappearing from your list.
-            This happens for various reasons: the artist quit the platform or published a remastered album, for example. 
-            But searching for those greyed out songs manually to replace them takes too much time. 
-            So <b>I created this tool to connect to Spotify API and fetch them all at once</b>. 
-            I hope it will be as helpful for you as it is for me! Cheers, Soch.</p>
-        </div>
-        {/* <Profile profile={userData.profile}/> */}
-        {/* <TopTracks topTracks={userData.topTracks}/> */}
-        <div className="row">
-          <Progress colour={'#1ed760'} percentage={percentage} loading={loading}/> {/* Ideally I should use a colour variable primary instead of hard coding */}
-          <UnplayableTracks unplayables={userData.unplayables} userData={userData}/>
-        </div>
-        <div className="row">
-          <Connecter onClick={connectToSpotify} loading={loading} userData={userData}/> {/* Find a a way to hide if existing userData or change to REFRESH DATA */}
-        </div>
-        <div className="row mt-5 thanks">
-          <p>Made with love by Antoine Sochat. Website: <a href="https://soch.at">soch.at</a>. Any suggestion: antoine@soch.at</p>
-        </div>
-        <br/>
-      </div>
+    <Router>
+      <Navigation />
+      <Routes>
+        <Route path="/" element={
+          <div className="container">
+            <div className="row">
+              <h1>Find your <i>greyed out</i> saved songs that are no longer on Spotify</h1>
+            </div>
+            <div className="row mt-5">
+              <p><b>Why this website?</b> If you're like me, you probably have more than 2000 saved tracks on Spotify. 
+                And you may have realized that songs keep disappearing from your list.
+                This happens for various reasons: the artist quit the platform or published a remastered album, for example. 
+                But searching for those greyed out songs manually to replace them takes too much time. 
+                So <b>I created this tool to connect to Spotify API and fetch them all at once</b>. 
+                I hope it will be as helpful for you as it is for me! Cheers, Soch.</p>
+            </div>
+            {/* <Profile profile={userData.profile}/> */}
+            {/* <TopTracks topTracks={userData.topTracks}/> */}
+            <div className="row">
+              <Progress colour={'#1ed760'} percentage={percentage} loading={loading}/> {/* Ideally I should use a colour variable primary instead of hard coding */}
+              <UnplayableTracks unplayables={userData.unplayables} userData={userData}/>
+            </div>
+            <div className="row">
+              <Connecter onClick={connectToSpotify} loading={loading} userData={userData}/> {/* Find a a way to hide if existing userData or change to REFRESH DATA */}
+            </div>
+            <div className="row mt-5 thanks">
+              <p>Made with love by Antoine Sochat. Website: <a href="https://soch.at">soch.at</a>. Any suggestion: antoine@soch.at</p>
+            </div>
+            <br/>
+          </div>
+        } />
+        <Route path="/insights" element={
+            <LanguageAnalysis enrichedSongs={userData.enrichedSongs || []} />
+        } />
+      </Routes>
+    </Router>
     </>
   )
 }

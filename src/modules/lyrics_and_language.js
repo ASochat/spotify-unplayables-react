@@ -110,6 +110,14 @@ export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessTo
                         //     "geniusDeemedCoherent: ", geniusDeemedCoherent)
                         
                         if (!geniusDeemedCoherent) {
+                            incoherentSongs.push({
+                                "title": song.title,
+                                "artist": song.artist,
+                                "geniusTitle": geniusSong.title,
+                                "geniusArtist": geniusSong.artist,
+                                "geniusTitleCoherence": geniusTitleCoherence,
+                                "geniusDeemedCoherent": geniusDeemedCoherent
+                            })
                             return {
                                 ...song,
                                 geniusTitle,
@@ -163,7 +171,8 @@ export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessTo
         enrichedSongs.push(...batchResults);
         console.log(`Processed ${enrichedSongs.length} of ${songsList.length} songs`);
     }
-    console.log("enrichedSongs", enrichedSongs)
+    console.log("enrichedSongs: ", enrichedSongs)
+    console.log("incoherentSongs: ", incoherentSongs)
     return enrichedSongs;
 }
 
