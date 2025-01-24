@@ -34,7 +34,7 @@ async function returnOffset(offset) {
 
 export async function fetchAllSongs(token) {
 
-    let offset = 1870;
+    let offset = 1800;
     let batchSize = 50; 
     var tracks = [];
     var newTracks = [];  // Holds new batch of tracks
@@ -52,7 +52,7 @@ export async function fetchAllSongs(token) {
 
         let { items } = await result.json()
 
-        console.log(items);
+        // console.log(items);
 
         newTracks = items.slice(0, 50).map((item) => ({
             artist: item.track.artists.map((_artist) => _artist.name).join(', '),
