@@ -52,6 +52,20 @@ const Connecter = (props) => {
   )
 }
 
+const Footer = ({ userData, loading, onConnect }) => {
+  return (
+    <>
+      <div className="row">
+        <Connecter onClick={onConnect} loading={loading} userData={userData}/>
+      </div>
+      <div className="row mt-5 thanks">
+        <p>Made with love by Antoine Sochat. Website: <a href="https://soch.at">soch.at</a>. Any suggestion: antoine@soch.at</p>
+      </div>
+      <br/>
+    </>
+  )
+}
+
 const Profile = (props) => {
   const profile = {
     userId: props.profile.display_name,
@@ -320,19 +334,13 @@ const App = (props) => {
               <Progress colour={'#1ed760'} percentage={percentage} loading={loading}/> {/* Ideally I should use a colour variable primary instead of hard coding */}
               <UnplayableTracks unplayables={userData.unplayables} userData={userData}/>
             </div>
-            <div className="row">
-              <Connecter onClick={connectToSpotify} loading={loading} userData={userData}/> {/* Find a a way to hide if existing userData or change to REFRESH DATA */}
-            </div>
-            <div className="row mt-5 thanks">
-              <p>Made with love by Antoine Sochat. Website: <a href="https://soch.at">soch.at</a>. Any suggestion: antoine@soch.at</p>
-            </div>
-            <br/>
           </div>
         } />
         <Route path="/insights" element={
             <LanguageAnalysis enrichedSongs={userData.enrichedSongs || []} />
         } />
       </Routes>
+      <Footer userData={userData} loading={loading} onConnect={connectToSpotify} />
     </Router>
     </>
   )

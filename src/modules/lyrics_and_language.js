@@ -61,6 +61,8 @@ const getSongWithRetry = async (options, retryCount = 0) => {
         const result = await searchSong(options);
         return result;
     } catch (error) {
+        // That's an addition from Cursor in case of a 'Too many requests' error. Not sure if necessary
+        console.log("Retry getting song: ", error) 
         // If we hit rate limit (429) and haven't retried too many times
         if (error.response?.status === 429 && retryCount < 3) {
             // Wait for 2 seconds before retrying
@@ -73,7 +75,8 @@ const getSongWithRetry = async (options, retryCount = 0) => {
 
 export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessToken) {
     // Process songs in smaller batches to avoid rate limiting
-    const batchSize = 5;
+    const batchSize = 10;
+    const timeBetweenBatches = 500;
     const enrichedSongs = [];
     const incoherentSongs = [];
 
@@ -82,7 +85,7 @@ export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessTo
         
         // Add delay between batches
         if (i > 0) {
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, timeBetweenBatches));
         }
 
         const batchResults = await Promise.all(
