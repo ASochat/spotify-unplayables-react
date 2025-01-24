@@ -79,6 +79,8 @@ export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessTo
     for (let i = 0; i < songsList.length; i += batchSize) {
         console.log('Processing songs enrichment batch', i);
         const batch = songsList.slice(i, i + batchSize);
+
+        let incoherentSongs = [];
         
         // Add delay between batches
         if (i > 0) {
@@ -98,8 +100,14 @@ export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessTo
                     const geniusSong = await getSongWithRetry(options);
                     if (geniusSong && geniusSong.url) {
                         const geniusTitle = geniusSong.title;
-                        const geniusTitleCoherence = await getCoherenceScore(song.title+' by '+song.artist, geniusSong.title);
+                        const geniusTitleCoherence = await getCoherenceScore(song.title+' '+song.artist, geniusSong.title+' '+geniusSong.artist);
                         const geniusDeemedCoherent = geniusTitleCoherence > 0.3;
+                        // console.log("title: ", song.title,
+                        //     "artist: ", song.artist,
+                        //     "geniusTitle: ", geniusSong.title,
+                        //     "geniusArtist: ", geniusSong.artist,
+                        //     "geniusTitleCoherence: ", geniusTitleCoherence,
+                        //     "geniusDeemedCoherent: ", geniusDeemedCoherent)
                         
                         if (!geniusDeemedCoherent) {
                             return {

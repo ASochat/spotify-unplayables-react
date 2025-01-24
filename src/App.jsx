@@ -196,7 +196,7 @@ const App = (props) => {
   const [loading, setLoading] = useState(false)
 
   // Genius API access token
-  const geniusAccessToken = "ttj7Va38CTTmfXsSME2NYWWOyYsGzV4OyHH9XY83UTwQPNBvHPC-nJmfEDeS1i67";
+  const geniusAccessToken = import.meta.env.VITE_GENIUS_ACCESS_TOKEN
 
   // useEffect to run the code only once
   useEffect(() => {

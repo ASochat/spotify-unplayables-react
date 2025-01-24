@@ -7,7 +7,7 @@ import { createRoot } from 'react-dom/client'
 // CAN'T REQUIRE MODULES LIKE ON NODE --> Module "util" has been externalized for browser compatibility. Cannot access "util.promisify" in client code. See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
 // import './index.css'
 import App from './App.jsx'
-import dotenv from 'dotenv'
+// import dotenv from 'dotenv'
 
 // Import created modules
 import { getAccessToken } from './modules/spotify_connect'

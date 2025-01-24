@@ -11,13 +11,53 @@ import axios from 'axios';
  */
 export const searchSong = async (options) => {
     try {
-        let searchQuery = options.optimizeQuery 
-            ? `${options.title} ${options.artist}`.toLowerCase()
-                .replace(/ *\([^)]*\) */g, '') // Remove content in parentheses
-                .replace(/ *\[[^\]]*\] */g, '') // Remove content in brackets
-                .replace(/feat.|ft./g, '')      // Remove feat. or ft.
-                .replace(/\s+/g, ' ').trim()    // Remove extra spaces
-            : `${options.title} ${options.artist}`;
+        // Separate title and artist processing
+        let cleanTitle = options.optimizeQuery 
+            ? options.title
+                // Originally we had this lowercase but removed it because useless
+                // .toLowerCase()
+
+                // Remove featuring artists
+                .replace(/feat\.|ft\.|featuring/g, '')
+                
+                // Remove version indicators with their preceding parentheses or dash
+                .replace(/(?: - | \().*(?:remastered|re-?master).*?(?:\)|$)/gi, '')
+                .replace(/(?: - | \().*(?:radio\s?edit).*?(?:\)|$)/gi, '')
+                .replace(/(?: - | \().*(?:live).*?(?:\)|$)/gi, '')
+                .replace(/(?: - | \().*(?:remix|mix).*?(?:\)|$)/gi, '')
+                .replace(/(?: - | \().*(?:acoustic).*?(?:\)|$)/gi, '')
+                .replace(/(?: - | \().*(?:unplugged).*?(?:\)|$)/gi, '')
+                .replace(/(?: - | \().*(?:version).*?(?:\)|$)/gi, '')
+                .replace(/(?: - | \().*(?:remake).*?(?:\)|$)/gi, '')
+                .replace(/(?: - | \().*(?:cover).*?(?:\)|$)/gi, '')
+                .replace(/(?: - | \().*(?:demo).*?(?:\)|$)/gi, '')
+                .replace(/(?: - | \().*(?:instrumental).*?(?:\)|$)/gi, '')
+                .replace(/(?: - | \().*(?:karaoke).*?(?:\)|$)/gi, '')
+                .replace(/(?: - | \().*(?:extended).*?(?:\)|$)/gi, '')
+                .replace(/(?: - | \().*(?:original).*?(?:\)|$)/gi, '')
+                .replace(/(?: - | \().*(?:bonus\s?track).*?(?:\)|$)/gi, '')
+                .replace(/(?: - | \().*(?:deluxe).*?(?:\)|$)/gi, '')
+                .replace(/(?: - | \().*(?:single).*?(?:\)|$)/gi, '')
+                .replace(/(?: - | \().*(?:album\s?version).*?(?:\)|$)/gi, '')
+                .replace(/(?: - | \().*(?:anniversary).*?(?:\)|$)/gi, '')
+                .replace(/(?: - | \().*(?:alternative).*?(?:\)|$)/gi, '')
+                .replace(/(?: - | \().*(?:edit).*?(?:\)|$)/gi, '')
+                
+                // Only remove years when they're part of a version indicator
+                .replace(/(?: - | \().*(?:19|20)\d{2}(?:\s+(?:remaster|version|mix|edit|remix))?.*?(?:\)|$)/gi, '')
+                
+                // Clean up any leftover empty parentheses and extra spaces
+                .replace(/\(\s*\)/g, '')
+                .replace(/\s+/g, ' ')
+                .trim()
+            : options.title;
+
+        // Create search query by combining cleaned title and original artist
+        let searchQuery = `${cleanTitle} ${options.artist}`;
+
+        // console.log('Original title:', options.title);
+        // console.log('Cleaned title:', cleanTitle);
+        // console.log('Final search query:', searchQuery);
 
         // Use our proxy server instead of direct Genius API call
         const searchResponse = await axios.get(`http://localhost:3000/api/genius/search`, {
@@ -28,6 +68,7 @@ export const searchSong = async (options) => {
         });
 
         const hits = searchResponse.data.response.hits;
+        // console.log("results: ", hits)
         if (hits.length === 0) return null;
 
         // Get the first result
