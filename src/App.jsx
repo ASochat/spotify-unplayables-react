@@ -30,8 +30,8 @@ const Navigation = () => {
       <div className="container">
         {/* <Link className="navbar-brand" to="/">Spotify Unplayables</Link> */}
         <div className="navbar-nav">
-          <Link className="nav-link" to="/">Home</Link>
-          <Link className="nav-link" to="/insights">Language Analysis</Link>
+          <Link className="nav-link" to="/">Your unplayables</Link>
+          <Link className="nav-link" to="/insights">Insights on your songs</Link>
         </div>
       </div>
     </nav>

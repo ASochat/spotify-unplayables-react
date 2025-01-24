@@ -75,12 +75,10 @@ export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessTo
     // Process songs in smaller batches to avoid rate limiting
     const batchSize = 5;
     const enrichedSongs = [];
+    const incoherentSongs = [];
 
     for (let i = 0; i < songsList.length; i += batchSize) {
-        console.log('Processing songs enrichment batch', i);
         const batch = songsList.slice(i, i + batchSize);
-
-        let incoherentSongs = [];
         
         // Add delay between batches
         if (i > 0) {
