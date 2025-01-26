@@ -6,7 +6,7 @@
 console.log('START APP.JSX')
 
 // Global imports
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 // import axios from 'axios'
 
@@ -216,52 +216,119 @@ const App = (props) => {
   //   setUserData(userData)
   // }, [])
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('');
+  const [progress, setProgress] = useState(0);
+  const isFetchingRef = useRef(false);
+
+  const updateLoadingState = (message, progressValue) => {
+    setLoadingMessage(message);
+    setProgress(progressValue);
+    console.log(`${message} (${progressValue}%)`);
+  };
 
   // Genius API access token
   const geniusAccessToken = import.meta.env.VITE_GENIUS_ACCESS_TOKEN
 
-  // useEffect to run the code only once
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
   useEffect(() => {
-    // Théoriquement, on aurait même pas besoin de faire un localStorage, il faut juste passer la variable à l'app
-    // Ici on utilise userData.fetched mais il faudrait plutôt un évènement de refresher
-    if (!userData.fetched && URLparamCode && !isCodeUsed) {
-      // REMOVED CONDITION (!accessToken || accessToken === 'undefined') since we use the accessToken only once - for now
-      setLoading(true)
-      console.log('Getting access token...')
-      getAccessToken(appClientId, URLparamCode, redirectUrl).then(accessToken => {
-        const profile = fetchProfile(accessToken)
-        const topTracks = fetchTopTracks(accessToken)
-        const allSongs = fetchAllSongs(accessToken)
-        const unplayables = allSongs
-          .then(songs => { 
-            const filteredUnplayables = filterUnplayables(songs);
-            return filteredUnplayables;
-            // console.log('Post then unplayables:', filterUnplayables(songs))
-            })
-          .catch(error => console.error('Failed to fetch all tracks and filter unplayables', error))
-        const enrichedSongs = allSongs
-          .then(async songs => { 
-            const enrichedResults = await enrichSongsWithLyricsAndLanguage(songs, geniusAccessToken);
-            console.log('Finished processing all songs');
-            return enrichedResults;
-          })
-          .catch(error => {
-            console.error('Failed to fetch all tracks and enrich them:', error);
-            return []; // Return empty array on error to prevent undefined
-          });
-        
-        Promise.all([profile, topTracks, allSongs, unplayables, enrichedSongs]).then(([profile, topTracks, allSongs, unplayables, enrichedSongs]) => {
-          setLoading(false)
-          console.log('Starting promise to pass all user data')
-          setUserData({ fetched: true, profile, topTracks, allSongs, unplayables, enrichedSongs })
-          localStorage.setItem('user_data', JSON.stringify({ fetched: true, profile, topTracks, allSongs, unplayables, enrichedSongs }));
-        })
-      })
-      // Can't reuse the same user code, storing it local storage to avoid confusion
-      localStorage.setItem('spotify_user_code', URLparamCode);
-    } 
-  })
+    const fetchSpotifyData = async () => {
+      // Prevent double fetching
+      if (isFetchingRef.current) {
+        return;
+      }
+
+      try {
+        if (!userData.fetched && URLparamCode && !isCodeUsed) {
+          isFetchingRef.current = true;
+          updateLoadingState("Starting fetching...", 0);
+          setLoading(true);
+          
+          try {
+            updateLoadingState("Getting access token...", 10);
+            await delay(10);
+            const accessToken = await getAccessToken(appClientId, URLparamCode, redirectUrl);
+            
+            if (!accessToken) {
+              throw new Error('Failed to get access token');
+            }
+
+            updateLoadingState('Fetching your Spotify profile...', 20);
+            await delay(10);
+            const profile = await fetchProfile(accessToken);
+
+            updateLoadingState('Getting your top tracks...', 35);
+            await delay(10);
+            const topTracks = await fetchTopTracks(accessToken);
+
+            updateLoadingState('Fetching all your saved songs...', 50);
+            await delay(10);
+            const allSongs = await fetchAllSongs(accessToken);
+
+            updateLoadingState('Finding unplayable tracks...', 65);
+            await delay(10);
+            const unplayables = allSongs ? await filterUnplayables(allSongs) : [];
+
+            // Break up language analysis into chunks
+            const enrichedSongs = [];
+            const chunkSize = 50;
+            const totalChunks = Math.ceil((allSongs?.length || 0) / chunkSize);
+            
+            for (let i = 0; i < (allSongs?.length || 0); i += chunkSize) {
+              const chunk = allSongs.slice(i, i + chunkSize);
+              const currentChunk = Math.floor(i / chunkSize) + 1;
+              const progressValue = 65 + Math.floor((currentChunk / totalChunks) * 30); // Progress from 65% to 95%
+              
+              updateLoadingState(
+                `Getting lyrics for songs ${i + 1}-${Math.min(i + chunkSize, allSongs.length)} of ${allSongs.length}...`, 
+                progressValue
+              );
+              
+              await delay(10);
+              const enrichedChunk = await enrichSongsWithLyricsAndLanguage(chunk, geniusAccessToken);
+              enrichedSongs.push(...enrichedChunk);
+            }
+
+            updateLoadingState('Saving your data...', 95);
+            await delay(10);
+
+            // Update state with all the data
+            const newUserData = { 
+              fetched: true, 
+              profile, 
+              topTracks, 
+              allSongs, 
+              unplayables, 
+              enrichedSongs 
+            };
+            setUserData(newUserData);
+            localStorage.setItem('user_data', JSON.stringify(newUserData));
+            localStorage.setItem('spotify_user_code', URLparamCode);
+            
+            updateLoadingState('Complete!', 100);
+            await delay(500); // Show completion briefly
+            
+          } catch (error) {
+            console.error('Error fetching Spotify data:', error);
+          } finally {
+            setLoading(false);
+            setLoadingMessage('');
+            setProgress(0);
+            isFetchingRef.current = false;
+          }
+        }
+      } catch (error) {
+        console.error('Error in fetchSpotifyData:', error);
+        setLoading(false);
+        setLoadingMessage('');
+        setProgress(0);
+        isFetchingRef.current = false;
+      }
+    };
+
+    fetchSpotifyData();
+  }, [URLparamCode, userData.fetched, isCodeUsed]);
 
   // const test = new Date("2020-05-12T23:50:21.817Z");
   // console.log(test, test.toLocaleDateString());
@@ -331,8 +398,22 @@ const App = (props) => {
             {/* <Profile profile={userData.profile}/> */}
             {/* <TopTracks topTracks={userData.topTracks}/> */}
             <div className="row">
-              <Progress colour={'#1ed760'} percentage={percentage} loading={loading}/> {/* Ideally I should use a colour variable primary instead of hard coding */}
-              <UnplayableTracks unplayables={userData.unplayables} userData={userData}/>
+              {loading && (
+                <div className="mt-4 mb-4">
+                  <Progress 
+                    colour={'#1ed760'} 
+                    percentage={progress} 
+                    loading={loading}
+                    loadingMessage={loadingMessage}
+                  />
+                </div>
+              )}
+              {!loading && (
+                <UnplayableTracks 
+                  unplayables={userData.unplayables} 
+                  userData={userData}
+                />
+              )}
             </div>
           </div>
         } />

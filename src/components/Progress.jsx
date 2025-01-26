@@ -1,4 +1,4 @@
-const Progress = ({ colour, percentage, loading }) => {  
+const Progress = ({ colour, percentage, loading, loadingMessage }) => {  
 
     const cleanPercentage = (percentage) => {
         const isNegativeOrNaN = !Number.isFinite(+percentage) || percentage < 0; // we can set non-numbers to 0 here
@@ -45,7 +45,7 @@ const Progress = ({ colour, percentage, loading }) => {
     return (
         <div>
             <div className={"mt-5" + " " + display}>
-                <div className="">Your data is loading...</div>
+                <div className="">{loadingMessage}</div>
                 <svg width={200} height={200}>
                     <g transform={`rotate(-90 ${"100 100"})`}>
                         <Circle colour="transparent" />

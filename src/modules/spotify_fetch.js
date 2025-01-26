@@ -6,6 +6,8 @@ export async function fetchProfile(token) {
         headers: { Authorization: `Bearer ${token}` }
     });
 
+    console.log("Fetched profile!")
+
     return await result.json();
 }
 
@@ -25,6 +27,8 @@ export async function fetchTopTracks(token) {
         title: track.name,
       }))
 
+    console.log("Fetched top tracks!")
+
     return tracks;
 }
 
@@ -34,7 +38,7 @@ async function returnOffset(offset) {
 
 export async function fetchAllSongs(token) {
 
-    let offset = 1841;
+    let offset = 1870;
     let batchSize = 50; 
     var tracks = [];
     var newTracks = [];  // Holds new batch of tracks
@@ -73,6 +77,8 @@ export async function fetchAllSongs(token) {
         // returnOffset(offset); // This doesn't work
     }
 
+    console.log("Fetched all songs!")
+
     return tracks;
 }
 
@@ -88,7 +94,7 @@ export async function filterUnplayables(tracks) {
         }
     }
 
-    // console.log('In function unplayables', unplayables)
+    console.log('Filtered unplayables!')
 
     return unplayables;
 }
