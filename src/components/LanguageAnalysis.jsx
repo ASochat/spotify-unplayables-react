@@ -19,7 +19,7 @@ const LanguageAnalysis = ({ enrichedSongs }) => {
               <td>{song.title}</td>
               <td>{song.artist}</td>
               <td>{song.language}</td>
-              <td>{song.geniusTitleCoherence?.toFixed(2)}</td>
+              <td>{song.geniusCoherence?.toFixed(2)}</td>
             </tr>
           ))}
         </tbody>

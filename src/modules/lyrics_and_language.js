@@ -2,7 +2,6 @@
 import { load } from "cheerio"
 import { franc } from 'franc-min'
 import { iso6393 } from 'iso-639-3'
-import stringSimilarity from 'string-similarity'
 import axios from 'axios'
 // We're using our own Genius API wrapper instead of genius-lyrics-api
 import { searchSong } from './genius_api'
@@ -38,11 +37,6 @@ const scrapeLyrics = async (url) => {
     // return null;
     throw error;
   }
-};
-
-const getCoherenceScore = async (title1, title2) => {
-    const coherenceScore = stringSimilarity.compareTwoStrings(title1, title2);
-    return coherenceScore;
 };
 
 const getLanguage = async (lyrics) => {
@@ -100,44 +94,43 @@ export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessTo
                 
                 try {
                     const geniusSong = await getSongWithRetry(options);
-                    if (geniusSong && geniusSong.url) {
-                        const geniusTitle = geniusSong.title;
-                        const geniusTitleCoherence = await getCoherenceScore(song.title+' '+song.artist, geniusSong.title+' '+geniusSong.artist);
-                        const geniusDeemedCoherent = geniusTitleCoherence > 0.3;
-                        // console.log("title: ", song.title,
-                        //     "artist: ", song.artist,
-                        //     "geniusTitle: ", geniusSong.title,
-                        //     "geniusArtist: ", geniusSong.artist,
-                        //     "geniusTitleCoherence: ", geniusTitleCoherence,
-                        //     "geniusDeemedCoherent: ", geniusDeemedCoherent)
-                        
-                        if (!geniusDeemedCoherent) {
+                    let lyrics = "";
+                    let language = "";
+
+                    if (geniusSong && geniusSong.url) {      
+                        if (!geniusSong.geniusDeemedCoherent) {
+                            // Really necessary? Can just filter out the final result...
                             incoherentSongs.push({
                                 "title": song.title,
                                 "artist": song.artist,
                                 "geniusTitle": geniusSong.title,
                                 "geniusArtist": geniusSong.artist,
-                                "geniusTitleCoherence": geniusTitleCoherence,
-                                "geniusDeemedCoherent": geniusDeemedCoherent
+                                "geniusCoherence": geniusSong.geniusCoherence,
+                                "geniusDeemedCoherent": geniusSong.geniusDeemedCoherent,
+                                "searchQuery": geniusSong.searchQuery
                             })
+                            const lyrics = "Genius deemed incoherent";
+                            const language = "Genius deemed incoherent";
                             return {
                                 ...song,
-                                geniusTitle,
-                                geniusTitleCoherence,
-                                geniusDeemedCoherent,
-                                lyrics: "Genius deemed incoherent",
-                                language: "Genius deemed incoherent"
+                                geniusTitle: geniusSong.title,
+                                geniusArtist: geniusSong.artist,
+                                geniusCoherence: geniusSong.geniusCoherence,
+                                geniusDeemedCoherent: geniusSong.geniusDeemedCoherent,
+                                lyrics,
+                                language
                             };
                         }
 
-                        const lyrics = await scrapeLyrics(geniusSong.url);
+                        lyrics = await scrapeLyrics(geniusSong.url);
                         try {
                             const language = await getLanguage(lyrics);
                             return {
                                 ...song,
-                                geniusTitle,
-                                geniusTitleCoherence,
-                                geniusDeemedCoherent,
+                                geniusTitle: geniusSong.title,
+                                geniusArtist: geniusSong.artist,
+                                geniusCoherence: geniusSong.geniusCoherence,
+                                geniusDeemedCoherent: geniusSong.geniusDeemedCoherent,
                                 lyricsUrl: geniusSong.url,
                                 lyrics,
                                 language
@@ -145,9 +138,10 @@ export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessTo
                         } catch (error) {
                             return {
                                 ...song,
-                                geniusTitle,
-                                geniusTitleCoherence,
-                                geniusDeemedCoherent,
+                                geniusTitle: geniusSong.title,
+                                geniusArtist: geniusSong.artist,
+                                geniusCoherence: geniusSong.geniusCoherence,
+                                geniusDeemedCoherent: geniusSong.geniusDeemedCoherent,
                                 lyricsUrl: geniusSong.url,
                                 lyrics,
                                 language: 'Error getting language'
