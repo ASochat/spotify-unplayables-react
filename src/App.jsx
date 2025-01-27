@@ -261,33 +261,51 @@ const App = (props) => {
             updateLoadingState('Getting your top tracks...', 35);
             await delay(10);
             const topTracks = await fetchTopTracks(accessToken);
+            // Update state immediately with top tracks
+            setUserData(prev => ({ ...prev, topTracks }));
 
             updateLoadingState('Fetching all your saved songs...', 50);
             await delay(10);
             const allSongs = await fetchAllSongs(accessToken);
+            setUserData(prev => ({ ...prev, 
+              allSongs,
+              fetched: true  // Mark as fetched when allSongs are fetched
+            }));
 
             updateLoadingState('Finding unplayable tracks...', 65);
             await delay(10);
             const unplayables = allSongs ? await filterUnplayables(allSongs) : [];
+            // Update state immediately with unplayables
+            setUserData(prev => ({ 
+                ...prev, 
+                unplayables,
+            }));
 
-            // Break up language analysis into chunks
+            // Start language analysis in background
+            updateLoadingState('Getting lyrics and analyzing languages...', 70);
             const enrichedSongs = [];
             const chunkSize = 50;
             const totalChunks = Math.ceil((allSongs?.length || 0) / chunkSize);
             
             for (let i = 0; i < (allSongs?.length || 0); i += chunkSize) {
-              const chunk = allSongs.slice(i, i + chunkSize);
-              const currentChunk = Math.floor(i / chunkSize) + 1;
-              const progressValue = 65 + Math.floor((currentChunk / totalChunks) * 30); // Progress from 65% to 95%
-              
-              updateLoadingState(
-                `Getting lyrics for songs ${i + 1}-${Math.min(i + chunkSize, allSongs.length)} of ${allSongs.length}...`, 
-                progressValue
-              );
-              
-              await delay(10);
-              const enrichedChunk = await enrichSongsWithLyricsAndLanguage(chunk, geniusAccessToken, chunkSize);
-              enrichedSongs.push(...enrichedChunk);
+                const chunk = allSongs.slice(i, i + chunkSize);
+                const currentChunk = Math.floor(i / chunkSize) + 1;
+                const progressValue = 70 + Math.floor((currentChunk / totalChunks) * 25); // Progress from 70% to 95%
+                
+                updateLoadingState(
+                    `Getting lyrics for songs ${i + 1}-${Math.min(i + chunkSize, allSongs.length)} of ${allSongs.length}...`, 
+                    progressValue
+                );
+                
+                await delay(10);
+                const enrichedChunk = await enrichSongsWithLyricsAndLanguage(chunk, geniusAccessToken, chunkSize);
+                enrichedSongs.push(...enrichedChunk);
+                
+                // Update enrichedSongs progressively
+                setUserData(prev => ({ 
+                    ...prev, 
+                    enrichedSongs: [...enrichedSongs]
+                }));
             }
 
             updateLoadingState('Saving your data...', 95);
@@ -408,7 +426,7 @@ const App = (props) => {
                   />
                 </div>
               )}
-              {!loading && (
+              {userData.unplayables && (
                 <UnplayableTracks 
                   unplayables={userData.unplayables} 
                   userData={userData}
@@ -418,7 +436,19 @@ const App = (props) => {
           </div>
         } />
         <Route path="/insights" element={
+          <div className="container">
+            {loading && (
+                <div className="mt-4 mb-4">
+                  <Progress 
+                    colour={'#1ed760'} 
+                    percentage={progress} 
+                    loading={loading}
+                    loadingMessage={loadingMessage}
+                  />
+                </div>
+              )}
             <LanguageAnalysis enrichedSongs={userData.enrichedSongs || []} />
+          </div>
         } />
       </Routes>
       <Footer userData={userData} loading={loading} onConnect={connectToSpotify} />
