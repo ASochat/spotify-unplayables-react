@@ -286,7 +286,7 @@ const App = (props) => {
               );
               
               await delay(10);
-              const enrichedChunk = await enrichSongsWithLyricsAndLanguage(chunk, geniusAccessToken);
+              const enrichedChunk = await enrichSongsWithLyricsAndLanguage(chunk, geniusAccessToken, chunkSize);
               enrichedSongs.push(...enrichedChunk);
             }
 

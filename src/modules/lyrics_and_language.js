@@ -67,11 +67,11 @@ const getSongWithRetry = async (options, retryCount = 0) => {
     }
 };
 
-export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessToken) {
+export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessToken, batchSize) {
     // Process songs in smaller batches to avoid rate limiting.
     // An idea could be divide this by 2 each time there's an error. 
-    const batchSize = 20;
-    const timeBetweenBatches = 250;
+    // const batchSize = 20; => now a function parameter
+    const timeBetweenBatches = 100;
     const enrichedSongs = [];
     const incoherentSongs = [];
 
