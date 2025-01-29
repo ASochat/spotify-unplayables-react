@@ -17,7 +17,7 @@ import { enrichSongsWithLyricsAndLanguage } from './modules/lyrics_and_language.
 
 // Import Bootstrap components
 // import 'bootstrap/dist/css/bootstrap.min.css'; // Hmmm... This is only for CSS, NOT Sass. Necessary?
-import './App.scss'
+// import './App.scss' - Bootstrap.css is abandoned
 import { Table, Form, Button } from 'react-bootstrap'
 
 // Import created components
@@ -26,12 +26,23 @@ import LanguageAnalysis from './components/LanguageAnalysis.jsx'
 
 const Navigation = () => {
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+    <nav className="w-full bg-body-bg">
       <div className="container">
-        {/* <Link className="navbar-brand" to="/">Spotify Unplayables</Link> */}
-        <div className="navbar-nav">
-          <Link className="nav-link" to="/">Your unplayables</Link>
-          <Link className="nav-link" to="/insights">Insights on your songs</Link>
+        <div className="flex items-center justify-between h-16">
+          <div className="flex space-x-6">
+            <Link 
+              to="/" 
+              className="text-body-color hover:text-primary transition-colors duration-200 px-3 py-2 rounded-md text-sm font-medium font-sans"
+            >
+              Your unplayables
+            </Link>
+            <Link 
+              to="/insights" 
+              className="text-body-color hover:text-primary transition-colors duration-200 px-3 py-2 rounded-md text-sm font-medium font-sans"
+            >
+              Insights on your songs
+            </Link>
+          </div>
         </div>
       </div>
     </nav>
