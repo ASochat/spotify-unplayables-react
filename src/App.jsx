@@ -26,22 +26,24 @@ import LanguageAnalysis from './components/LanguageAnalysis.jsx'
 
 const Navigation = () => {
   return (
-    <nav className="w-full bg-body-bg">
-      <div className="container">
+    <nav className="w-full border-b border-gray-200 bg-body-bg">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <div className="flex space-x-6">
-            <Link 
-              to="/" 
-              className="text-body-color hover:text-primary transition-colors duration-200 px-3 py-2 rounded-md text-sm font-medium font-sans"
-            >
-              Your unplayables
-            </Link>
-            <Link 
-              to="/insights" 
-              className="text-body-color hover:text-primary transition-colors duration-200 px-3 py-2 rounded-md text-sm font-medium font-sans"
-            >
-              Insights on your songs
-            </Link>
+          <div className="flex items-center justify-center flex-1">
+            <div className="flex space-x-8">
+              <Link 
+                to="/" 
+                className="text-body-color hover:text-primary transition-colors duration-200 px-3 py-2 rounded-md text-sm font-medium"
+              >
+                Your unplayables
+              </Link>
+              <Link 
+                to="/insights" 
+                className="text-body-color hover:text-primary transition-colors duration-200 px-3 py-2 rounded-md text-sm font-medium"
+              >
+                Insights on your songs
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -406,64 +408,68 @@ const App = (props) => {
   //       setNewNote('')
   //     })
 
+  // let's see...
+  
   return (
     <>
-    <Router>
-      <Navigation />
-      <Routes>
-        <Route path="/" element={
-          <div className="container">
-            <div className="row">
-              <h1>Find your <i>greyed out</i> saved songs that are no longer on Spotify</h1>
-            </div>
-            <div className="row mt-5">
-              <p><b>Why this website?</b> If you're like me, you probably have more than 2000 saved tracks on Spotify. 
-                And you may have realized that songs keep disappearing from your list.
-                This happens for various reasons: the artist quit the platform or published a remastered album, for example. 
-                But searching for those greyed out songs manually to replace them takes too much time. 
-                So <b>I created this tool to connect to Spotify API and fetch them all at once</b>. 
-                I hope it will be as helpful for you as it is for me! Cheers, Soch.</p>
-            </div>
-            {/* <Profile profile={userData.profile}/> */}
-            {/* <TopTracks topTracks={userData.topTracks}/> */}
-            <div className="row">
-              {loading && (
-                <div className="mt-4 mb-4">
-                  <Progress 
-                    colour={'#1ed760'} 
-                    percentage={progress} 
-                    loading={loading}
-                    loadingMessage={loadingMessage}
-                  />
+      <Router>
+        <Navigation />
+        <Routes>
+          <Route path="/" element={
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+              <div className="space-y-6">
+                <div>
+                  <h1 className="text-3xl font-bold">Find your <i>greyed out</i> saved songs that are no longer on Spotify</h1>
                 </div>
-              )}
-              {userData.unplayables && (
-                <UnplayableTracks 
-                  unplayables={userData.unplayables} 
-                  userData={userData}
-                />
-              )}
-            </div>
-          </div>
-        } />
-        <Route path="/insights" element={
-          <div className="container">
-            {loading && (
-                <div className="mt-4 mb-4">
-                  <Progress 
-                    colour={'#1ed760'} 
-                    percentage={progress} 
-                    loading={loading}
-                    loadingMessage={loadingMessage}
-                  />
+                <div>
+                  <p className="text-lg"><b>Why this website?</b> If you're like me, you probably have more than 2000 saved tracks on Spotify. 
+                    And you may have realized that songs keep disappearing from your list.
+                    This happens for various reasons: the artist quit the platform or published a remastered album, for example. 
+                    But searching for those greyed out songs manually to replace them takes too much time. 
+                    So <b>I created this tool to connect to Spotify API and fetch them all at once</b>. 
+                    I hope it will be as helpful for you as it is for me! Cheers, Soch.</p>
                 </div>
-              )}
-            <LanguageAnalysis enrichedSongs={userData.enrichedSongs || []} />
-          </div>
-        } />
-      </Routes>
-      <Footer userData={userData} loading={loading} onConnect={connectToSpotify} />
-    </Router>
+                <div>
+                  {loading && (
+                    <div className="mt-4 mb-4">
+                      <Progress 
+                        colour={'#1ed760'} 
+                        percentage={progress} 
+                        loading={loading}
+                        message={loadingMessage}
+                      />
+                    </div>
+                  )}
+                  {!loading && userData.unplayables && (
+                    <UnplayableTracks 
+                      unplayables={userData.unplayables} 
+                      userData={userData}
+                    />
+                  )}
+                </div>
+              </div>
+            </main>
+          } />
+          <Route path="/insights" element={
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+              <div>
+                {loading && (
+                  <div className="mt-4 mb-4">
+                    <Progress 
+                      colour={'#1ed760'} 
+                      percentage={progress} 
+                      loading={loading}
+                      message={loadingMessage}
+                    />
+                  </div>
+                )}
+                <LanguageAnalysis enrichedSongs={userData.enrichedSongs || []} />
+              </div>
+            </main>
+          } />
+        </Routes>
+        <Footer userData={userData} loading={loading} onConnect={connectToSpotify} />
+      </Router>
     </>
   )
 }

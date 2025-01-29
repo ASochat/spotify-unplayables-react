@@ -4,6 +4,13 @@
 * {
     font-family: 'Quicksand', sans-serif !important;
   }
-/* 
+
+/* @theme DOESN'T WORK */
+/* @theme inline {
+/* --font-sans: var(--font-inter); 
+--font-body: 'Quicksand', 'Helvetica Neue', 'Arial', 'sans-serif'
+} */
+
+/* NO NEED OF THESE IMPORT WITH VITE INSTALL
 @import "tailwindcss/preflight";
 @import "tailwindcss/utilities"; */
