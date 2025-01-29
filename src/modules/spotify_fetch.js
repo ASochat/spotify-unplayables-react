@@ -37,49 +37,72 @@ async function returnOffset(offset) {
 }
 
 export async function fetchAllSongs(token) {
-
-    let offset = 1700;
-    let batchSize = 50; 
-    var tracks = [];
-    var newTracks = [];  // Holds new batch of tracks
-
-    while (batchSize == 50) {
-        // We should use offset to show a loading indicator to users
-        // console.log(offset)
-
-        var result = await fetch("https://api.spotify.com/v1/me/tracks?market=NO&limit=50&offset="+offset, {
-            method: "GET", 
-            headers: { 
-                'Authorization': `Bearer ${token}`,
-            }
-        })
-
-        let { items } = await result.json()
-
-        // console.log(items);
-
-        newTracks = items.slice(0, 50).map((item) => ({
-            artist: item.track.artists.map((_artist) => _artist.name).join(', '),
-            title: item.track.name,
-            added_at: item.added_at.split('T')[0],
-            songUrl: item.track.external_urls.spotify,
-            is_playable: item.track.is_playable,
-            // available_markets: item.track.available_markets
-          }))
-
-        //console.log(offset);
-
-        tracks = tracks.concat(await newTracks);
-
-        batchSize = items.length;
-        offset += batchSize;
-
-        // returnOffset(offset); // This doesn't work
+    // First check if token exists
+    if (!token) {
+        console.error('No token provided to fetchAllSongs');
+        throw new Error('Authentication token is required');
     }
 
-    console.log("Fetched all songs!")
+    let offset = 1890;
+    let batchSize = 50; 
+    var tracks = [];
+    var newTracks = [];
 
-    return tracks;
+    try {
+        while (batchSize == 50) {
+            console.log(`Fetching tracks with offset ${offset}, token: ${token.substring(0, 10)}...`);
+            
+            var result = await fetch("https://api.spotify.com/v1/me/tracks?market=NO&limit=50&offset="+offset, {
+                method: "GET", 
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            // Check if the response is ok
+            if (!result.ok) {
+                const errorData = await result.json();
+                console.error('Spotify API error:', {
+                    status: result.status,
+                    statusText: result.statusText,
+                    error: errorData,
+                    offset: offset,
+                    hasToken: !!token
+                });
+                throw new Error(`Spotify API error: ${result.status} ${result.statusText}`);
+            }
+
+            let { items } = await result.json();
+            
+            // console.log(items);
+
+            newTracks = items.slice(0, 50).map((item) => ({
+                artist: item.track.artists.map((_artist) => _artist.name).join(', '),
+                title: item.track.name,
+                added_at: item.added_at.split('T')[0],
+                songUrl: item.track.external_urls.spotify,
+                is_playable: item.track.is_playable,
+                // available_markets: item.track.available_markets
+              }))
+
+            //console.log(offset);
+
+            tracks = tracks.concat(await newTracks);
+
+            batchSize = items.length;
+            offset += batchSize;
+
+            // returnOffset(offset); // This doesn't work
+        }
+
+        console.log("Fetched all songs successfully!");
+        return tracks;
+
+    } catch (error) {
+        console.error('Error in fetchAllSongs:', error);
+        throw error;
+    }
 }
 
 export async function filterUnplayables(tracks) { 
