@@ -1,9 +1,8 @@
-
 const Connecter = ({ loading, userData, onClick }) => {
     const display = loading ? 'hidden' : '';
     const variant = userData.fetched 
-      ? 'bg-white text-[#1ed760] border-2 border-[#1ed760] hover:bg-[#1ab352]' 
-      : 'bg-[#1ed760] text-white border-2 border-[#1ed760] hover:bg-[#1ab352] hover:border-[#1ab352]';
+      ? 'bg-white text-spotify-green border-2 border-spotify-green hover:bg-spotify-green-dark hover:text-white hover:border-spotify-green-dark' 
+      : 'bg-spotify-green text-white border-2 border-spotify-green hover:bg-spotify-green-dark hover:border-spotify-green-dark';
   
     const text = userData.fetched ? 'Refresh your data' : 'Connect to Spotify to fetch your songs';
   

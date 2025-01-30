@@ -7,7 +7,7 @@ console.log('START APP.JSX')
 
 // Global imports
 import { useEffect, useState, useRef } from 'react'
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Link, NavLink } from 'react-router-dom'
 // import axios from 'axios'
 
 // Import created modules
@@ -165,7 +165,7 @@ const App = (props) => {
                 const progressValue = 70 + Math.floor((currentChunk / totalChunks) * 25); // Progress from 70% to 95%
                 
                 updateLoadingState(
-                    `Getting lyrics for songs ${i + 1}-${Math.min(i + chunkSize, allSongs.length)} of ${allSongs.length}...`, 
+                    `Getting lyrics and analyzing languages for songs ${i + 1}-${Math.min(i + chunkSize, allSongs.length)} of ${allSongs.length}...`, 
                     progressValue
                 );
                 
@@ -275,10 +275,12 @@ const App = (props) => {
         <Navigation />
         <Routes>
           <Route path="/" element={
-            <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-              <div className="space-y-6">
+            <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+              <div className="space-y-10">
                 <div>
-                  <h1 className="text-3xl font-bold">Find your <i>greyed out</i> saved songs that are no longer on Spotify</h1>
+                  <h1 className="text-3xl sm:text-5xl font-bold text-center leading-tight">
+                    Find your <i>greyed out</i> saved songs that are no longer on Spotify
+                  </h1>
                 </div>
                 <div>
                   <p className="text-lg"><b>Why this website?</b> If you're like me, you probably have more than 2000 saved tracks on Spotify. 
@@ -310,7 +312,10 @@ const App = (props) => {
             </main>
           } />
           <Route path="/insights" element={
-            <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+              <h1 className="text-3xl sm:text-5xl font-bold text-center leading-tight">
+                Get some interesting insights on your songs
+              </h1>
               <div>
                 {loading && (
                   <div className="mt-4 mb-4">

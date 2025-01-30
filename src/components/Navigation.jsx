@@ -1,31 +1,40 @@
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 const Navigation = () => {
-    return (
-      <nav className="w-full border-b border-gray-200 bg-body-bg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center justify-center flex-1">
-              <div className="flex space-x-8">
-                <Link 
-                  to="/" 
-                  className="text-body-color hover:text-primary transition-colors duration-200 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Your unplayables
-                </Link>
-                <Link 
-                  to="/insights" 
-                  className="text-body-color hover:text-primary transition-colors duration-200 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Insights on your songs
-                </Link>
-              </div>
-            </div>
+  return (
+    <nav className="w-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-center h-36">
+          <div className="flex space-x-2 sm:space-x-8 w-full max-w-lg">
+            <NavLink 
+              to="/" 
+              className={({ isActive }) => 
+                `flex-1 px-4 sm:px-6 py-2 rounded-full text-sm font-medium uppercase transition-all duration-200 border-2 text-center
+                ${isActive 
+                  ? 'bg-black text-white border-black' 
+                  : 'text-black hover:bg-gray-350 border-black'
+                }`
+              }
+            >
+              Your unplayables
+            </NavLink>
+            <NavLink 
+              to="/insights" 
+              className={({ isActive }) => 
+                `flex-1 px-4 sm:px-6 py-2 rounded-full text-sm font-medium uppercase transition-all duration-200 border-2 text-center
+                ${isActive 
+                  ? 'bg-black text-white border-black' 
+                  : 'text-black hover:bg-gray-350 border-black'
+                }`
+              }
+            >
+              Insights on your songs
+            </NavLink>
           </div>
         </div>
-      </nav>
-    )
-  }
-
+      </div>
+    </nav>
+  );
+};
 
 export default Navigation;
