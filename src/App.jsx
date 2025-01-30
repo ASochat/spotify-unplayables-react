@@ -123,49 +123,44 @@ const TopTracks = (props) => {
 }
 
 const UnplayableTracks = (props) => {
-  // console.log('unplayables', props);
   const userName = props.userData.profile.display_name;
   const unplayablesNumber = props.userData.unplayables.length;
-  const display = props.userData.fetched ? '' : 'd-none';
+  const display = props.userData.fetched ? '' : 'hidden';
 
   return (
-    <div className={"container mt-5 " + display}>
-      <h2>You have {unplayablesNumber} unplayable tracks, {userName}</h2>
-      <div className="mt-4 mb-5 paragraph">
-        <span><i>Please note that we don't fetch your local files in your saved tracks.
+    <div className={`mt-8 ${display}`}>
+      <h2 className="text-2xl font-bold mb-4">You have {unplayablesNumber} unplayable tracks, {userName}</h2>
+      <div className="mb-6 text-gray-600 italic">
+        <span>Please note that we don't fetch your local files in your saved tracks.
           Therefore, the number on each track may not be the right one- it still gives an indication on its place in your list.
-        </i></span>
+        </span>
       </div>
-      {/* Bootstrap built in Table component */}
-      <Table striped>
-          <thead>
-              <tr>
-                  <th>Number</th>
-                  <th>Artist</th>
-                  <th>Name</th>
-                  <th>Added on</th>
+      
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-black">
+            <tr>
+              <th className="w-16 px-2.5 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">#</th>
+              <th className="px-2.5 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Title</th>
+              <th className="px-2.5 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Artist</th>
+              <th className="px-2.5 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Added on</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {props.unplayables.map((track, index) => (
+              <tr key={track.number} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-gray-100`}>
+                <td className="w-16 px-2.5 py-3 whitespace-nowrap text-sm text-gray-500">{track.number}</td>
+                <td className="px-2.5 py-3 whitespace-nowrap text-sm text-gray-900">{track.title}</td>
+                <td className="px-2.5 py-3 whitespace-nowrap text-sm text-gray-900">{track.artist}</td>
+                <td className="px-2.5 py-3 whitespace-nowrap text-sm text-gray-500">{track.added_at}</td>
               </tr>
-          </thead>    
-          <tbody>
-          {/* <tr>
-              <td>0</td>
-              <td>The Kops</td>
-              <td>Halloween</td>
-              <td>2010-01-01</td>
-          </tr> */}
-          { props.unplayables.map(track => 
-          <tr key={track.number}>
-              <td >{track.number}</td>
-              <td>{track.artist}</td>
-              <td>{track.title}</td>
-              <td>{track.added_at}</td>
-          </tr>
-          ) }
+            ))}
           </tbody>
-      </Table>
+        </table>
+      </div>
     </div>
-  )
-}
+  );
+};
 
 const App = (props) => {
   // console.log('App props: ', props)
