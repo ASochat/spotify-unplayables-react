@@ -51,33 +51,53 @@ const Navigation = () => {
   )
 }
 
-const Connecter = (props) => {
-  const display = props.loading ? 'd-none' : ''
-  const variant = props.userData.fetched ? 'outline-primary' : 'primary'
-  const text = props.userData.fetched ? 'Refresh your data' : 'Connect to Spotify to fetch your songs'
+const Connecter = ({ loading, userData, onClick }) => {
+  const display = loading ? 'hidden' : '';
+  const variant = userData.fetched 
+    ? 'bg-white text-[#1ed760] border-2 border-[#1ed760] hover:bg-[#1ab352]' 
+    : 'bg-[#1ed760] text-white border-2 border-[#1ed760] hover:bg-[#1ab352] hover:border-[#1ab352]';
+
+  const text = userData.fetched ? 'Refresh your data' : 'Connect to Spotify to fetch your songs';
 
   return (
-    <div className={"mt-5 " + display}>
-      <Button variant={variant} size="lg" className="btn-custom" onClick={props.onClick}>
+    <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-center ${display}`}>
+      <button 
+        onClick={onClick}
+        className={`${variant} w-full sm:w-auto px-6 sm:px-12 py-3 rounded-xl font-medium transition-all duration-200 cursor-pointer`}
+      >
         <span>{text}</span>
-      </Button>
+      </button>
     </div>
-  )
-}
+  );
+};
 
 const Footer = ({ userData, loading, onConnect }) => {
   return (
-    <>
-      <div className="row">
+    <footer className="mt-auto">
+      <div>
         <Connecter onClick={onConnect} loading={loading} userData={userData}/>
       </div>
-      <div className="row mt-5 thanks">
-        <p>Made with love by Antoine Sochat. Website: <a href="https://soch.at">soch.at</a>. Any suggestion: antoine@soch.at</p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-gray-350">
+        <p>
+          Made with love by Antoine Sochat. Website:  
+          <a 
+            href="https://soch.at" 
+            className="hover:text-spotify-green-dark transition-colors duration-200 ml-1 underline"
+          >
+            soch.at
+          </a>
+          . Any suggestion: 
+          <a 
+            href="mailto:antoine@soch.at"
+            className="hover:text-spotify-green-dark transition-colors duration-200 ml-1 underline"
+          >
+            antoine@soch.at
+          </a>
+        </p>
       </div>
-      <br/>
-    </>
-  )
-}
+    </footer>
+  );
+};
 
 const Profile = (props) => {
   const profile = {
@@ -411,7 +431,7 @@ const App = (props) => {
         <Navigation />
         <Routes>
           <Route path="/" element={
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
               <div className="space-y-6">
                 <div>
                   <h1 className="text-3xl font-bold">Find your <i>greyed out</i> saved songs that are no longer on Spotify</h1>

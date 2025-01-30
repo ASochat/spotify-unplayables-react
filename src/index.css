@@ -1,6 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
+@layer base {
+  :root {
+    --color-test: #ff00ff;
+    --spotify-green: #1ed760;
+    --spotify-green-dark: #1ab352;
+    --gray-350: #b1b1b1;
+  }
+}
+
 * {
     font-family: 'Quicksand', sans-serif !important;
   }
@@ -14,3 +23,28 @@
 /* NO NEED OF THESE IMPORT WITH VITE INSTALL
 @import "tailwindcss/preflight";
 @import "tailwindcss/utilities"; */
+
+/* Custom utility classes */
+.text-spotify-green {
+  color: var(--spotify-green);
+}
+
+.text-spotify-green-dark {
+  color: var(--spotify-green-dark);
+}
+
+.text-gray-350 {
+  color: var(--gray-350);
+}
+
+.bg-spotify-green {
+  background-color: var(--spotify-green);
+}
+
+.hover\:text-spotify-green-dark:hover {
+  color: var(--spotify-green-dark);
+}
+
+.border-spotify-green {
+  border-color: var(--spotify-green);
+}
