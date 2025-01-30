@@ -1,5 +1,5 @@
 const Connecter = ({ loading, userData, onClick }) => {
-    const display = loading ? 'hidden' : '';
+    const display = loading.global ? 'hidden' : '';
     const variant = userData.fetched 
       ? 'bg-white text-spotify-green border-2 border-spotify-green hover:bg-spotify-green-dark hover:text-white hover:border-spotify-green-dark' 
       : 'bg-spotify-green text-white border-2 border-spotify-green hover:bg-spotify-green-dark hover:border-spotify-green-dark';

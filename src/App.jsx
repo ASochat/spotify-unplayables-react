@@ -16,7 +16,7 @@ import { fetchAllSongs, fetchProfile, fetchTopTracks, filterUnplayables } from '
 import { enrichSongsWithLyricsAndLanguage } from './modules/lyrics_and_language.js'
 
 // Import created components
-import Progress from './components/Progress.jsx'
+import { Progress, ProgressSpecific } from './components/Progress'
 import LanguageAnalysis from './components/LanguageAnalysis.jsx'
 import Navigation from './components/Navigation.jsx'
 import Footer from './components/Footer.jsx'
@@ -64,7 +64,7 @@ const App = (props) => {
   // There's probably a better way, either through class, or JSON loading
   // Since it's the data per user, it should be stored in a JSON server, encapsulated for each user, and not local storaged
   const emptyUserData = { 
-    fetched: false,
+    fetched: {global: false, data: false, unplayables: false, enrichedSongs: false},
     profile: {displayName: '', email: '', country:'', external_urls: {spotify: ''}, images: []}, 
     topTracks: [], 
     allSongs: [], 
@@ -88,15 +88,41 @@ const App = (props) => {
   //   setUserData(userData)
   // }, [])
 
-  const [loading, setLoading] = useState(false);
+  // Initialize progress state with all stages
+  const [progress, setProgress] = useState({
+    global: 0,
+    dataFetching: 0,
+    unplayablesFiltering: 0,
+    songEnrichment: 0
+  });
+
+  // Initialize loading state
+  const [loading, setLoading] = useState({
+    global: false,
+    dataFetching: false,
+    unplayablesFiltering: false,
+    songEnrichment: false
+  });
+
   const [loadingMessage, setLoadingMessage] = useState('');
-  const [progress, setProgress] = useState(0);
   const isFetchingRef = useRef(false);
 
-  const updateLoadingState = (message, progressValue) => {
+  // Update function
+  const updateLoadingState = (message, globalProgressValue, stage, stageProgressValue) => {
     setLoadingMessage(message);
-    setProgress(progressValue);
-    console.log(`${message} (${progressValue}%)`);
+    if (stage) {
+      setProgress(prev => ({
+        ...prev,
+        global: globalProgressValue,
+        [stage]: stageProgressValue,
+      }));
+    } else {
+      setProgress(prev => ({
+        ...prev,
+        global: globalProgressValue,
+      }));
+    }
+    console.log(`${message} (${globalProgressValue}%) - ${stage}: ${stageProgressValue}%`);
   };
 
   // Genius API access token
@@ -112,13 +138,16 @@ const App = (props) => {
       }
 
       try {
-        if (!userData.fetched && URLparamCode && !isCodeUsed) {
+        if (!userData.fetched.global && URLparamCode && !isCodeUsed) {
           isFetchingRef.current = true;
-          updateLoadingState("Starting fetching...", 0);
-          setLoading(true);
+          updateLoadingState("Starting fetching...", 5, 'dataFetching', 5);
+          setLoading(prev => ({
+            ...prev,
+            global: true,
+          }));
           
           try {
-            updateLoadingState("Getting access token...", 10);
+            updateLoadingState("Getting access token...", 10, 'dataFetching', 20);
             await delay(10);
             const accessToken = await getAccessToken(appClientId, URLparamCode, redirectUrl);
             
@@ -126,46 +155,63 @@ const App = (props) => {
               throw new Error('Failed to get access token');
             }
 
-            updateLoadingState('Fetching your Spotify profile...', 20);
+            updateLoadingState('Fetching your Spotify profile...', 20, 'dataFetching', 40);
             await delay(10);
             const profile = await fetchProfile(accessToken);
 
-            updateLoadingState('Getting your top tracks...', 35);
+            updateLoadingState('Getting your top tracks...', 35, 'dataFetching', 60);
             await delay(10);
             const topTracks = await fetchTopTracks(accessToken);
             // Update state immediately with top tracks
             setUserData(prev => ({ ...prev, topTracks }));
 
-            updateLoadingState('Fetching all your saved songs...', 50);
+            updateLoadingState('Fetching all your saved songs...', 50, 'dataFetching', 80);
             await delay(10);
             const allSongs = await fetchAllSongs(accessToken);
             setUserData(prev => ({ ...prev, 
               allSongs,
-              fetched: true  // Mark as fetched when allSongs are fetched
+              fetched: {...prev.fetched, data: true}  // Mark as fetched when allSongs are fetched
             }));
 
-            updateLoadingState('Finding unplayable tracks...', 65);
+            updateLoadingState('Fetched all your saved songs!', 60, 'dataFetching', 100);
+
+
+            // Start unplayables filtering
+            updateLoadingState('Finding unplayable tracks...', 65, 'unplayablesFiltering', 5);
             await delay(10);
+            setLoading(prev => ({
+              ...prev,
+              unplayablesFiltering: true
+            }));
             const unplayables = allSongs ? await filterUnplayables(allSongs) : [];
             // Update state immediately with unplayables
             setUserData(prev => ({ 
                 ...prev, 
                 unplayables,
+                fetched: {...prev.fetched, unplayables: true}
             }));
+            updateLoadingState('Filtered unplayable tracks!', 70, 'unplayablesFiltering', 100);
 
             // Start language analysis in background
-            updateLoadingState('Getting lyrics and analyzing languages...', 70);
+            updateLoadingState('Getting lyrics and analyzing languages...', 75, 'songEnrichment', 5);
+            setLoading(prev => ({
+              ...prev,
+              songEnrichment: true
+            }));
             const enrichedSongs = [];
             const chunkSize = 50;
             const totalChunks = Math.ceil((allSongs?.length || 0) / chunkSize);
             
             for (let i = 0; i < (allSongs?.length || 0); i += chunkSize) {
                 const chunk = allSongs.slice(i, i + chunkSize);
-                const currentChunk = Math.floor(i / chunkSize) + 1;
-                const progressValue = 70 + Math.floor((currentChunk / totalChunks) * 25); // Progress from 70% to 95%
-                
+                const currentChunk = Math.floor(i / chunkSize) + 1; // Progress from 70% to 95%
+                const progressValue = Math.floor((currentChunk / totalChunks) * 100); // Progress from 70% to 95%
+                const globalProgressValue = 75 + Math.floor((currentChunk / totalChunks) * 20);
+
                 updateLoadingState(
                     `Getting lyrics and analyzing languages for songs ${i + 1}-${Math.min(i + chunkSize, allSongs.length)} of ${allSongs.length}...`, 
+                    globalProgressValue,
+                    'songEnrichment',
                     progressValue
                 );
                 
@@ -176,7 +222,8 @@ const App = (props) => {
                 // Update enrichedSongs progressively
                 setUserData(prev => ({ 
                     ...prev, 
-                    enrichedSongs: [...enrichedSongs]
+                    enrichedSongs: [...enrichedSongs],
+                    fetched: {...prev.fetched, enrichedSongs: true}
                 }));
             }
 
@@ -185,7 +232,7 @@ const App = (props) => {
 
             // Update state with all the data
             const newUserData = { 
-              fetched: true, 
+              fetched: { global: true, data: true, unplayables: true, enrichedSongs: true}, 
               profile, 
               topTracks, 
               allSongs, 
@@ -202,23 +249,37 @@ const App = (props) => {
           } catch (error) {
             console.error('Error fetching Spotify data:', error);
           } finally {
-            setLoading(false);
+            setLoading({
+              global: false,
+              dataFetching: false,
+              unplayablesFiltering: false,
+              songEnrichment: false,
+            });
             setLoadingMessage('');
-            setProgress(0);
             isFetchingRef.current = false;
           }
         }
       } catch (error) {
         console.error('Error in fetchSpotifyData:', error);
-        setLoading(false);
+        setLoading({
+          global: false,
+          dataFetching: false,
+          unplayablesFiltering: false,
+          songEnrichment: false,
+        });
         setLoadingMessage('');
-        setProgress(0);
+        setProgress({
+          global: 0,
+          dataFetching: 0,
+          unplayablesFiltering: 0,
+          songEnrichment: 0
+        });
         isFetchingRef.current = false;
       }
     };
 
     fetchSpotifyData();
-  }, [URLparamCode, userData.fetched, isCodeUsed]);
+  }, [URLparamCode, userData.fetched.global, isCodeUsed]);
 
   // const test = new Date("2020-05-12T23:50:21.817Z");
   // console.log(test, test.toLocaleDateString());
@@ -269,6 +330,19 @@ const App = (props) => {
 
   // let's see...
   
+  const progresses = {
+    'unplayables': {
+      label: "Unplayable tracks",
+      progress: userData.unplayables ? 100 : 0,
+      colour: "#1ed760"
+    },
+    'enrichedSongs': {
+      label: "Song insights",
+      percentage: userData.enrichedSongs ? 100 : 0,
+      colour: "#1ab352"
+    }
+  };
+
   return (
     <>
       <Router>
@@ -279,7 +353,9 @@ const App = (props) => {
               <div className="space-y-10">
                 <div>
                   <h1 className="text-3xl sm:text-5xl font-bold text-center leading-tight">
-                    Find your <i>greyed out</i> saved songs that are no longer on Spotify
+                    {/* The first transformation I tried was to rotate the text. Keeping it in case I want to use it again. */}
+                  {/* Find your <span className="inline-block transform -rotate-2"><span className="inline-block bg-gray-350 px-2 py-1 rounded-sm">greyed out</span></span> saved songs that are no longer on <span className="inline-block transform -rotate-2"><span className="inline-block bg-spotify-green text-white px-2 py-1 rounded-md">Spotify</span></span> */}
+                    Find your <span className="inline-block transform -rotate-1"><span className="inline-block bg-gray-350 px-2 py-1 rounded-sm transform -skew-x-12">greyed out</span></span> saved songs that are no longer on <span className="inline-block transform -rotate-1"><span className="inline-block bg-spotify-green px-2 py-1 rounded-sm transform -skew-x-12">Spotify</span></span>
                   </h1>
                 </div>
                 <div>
@@ -291,17 +367,7 @@ const App = (props) => {
                     I hope it will be as helpful for you as it is for me! Cheers, Soch.</p>
                 </div>
                 <div>
-                  {loading && (
-                    <div className="mt-4 mb-4">
-                      <Progress 
-                        colour={'#1ed760'} 
-                        percentage={progress} 
-                        loading={loading}
-                        message={loadingMessage}
-                      />
-                    </div>
-                  )}
-                  {!loading && userData.unplayables && (
+                  {userData.fetched.unplayables && (
                     <UnplayableTracks 
                       unplayables={userData.unplayables} 
                       userData={userData}
@@ -311,28 +377,56 @@ const App = (props) => {
               </div>
             </main>
           } />
+          
           <Route path="/insights" element={
             <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
               <h1 className="text-3xl sm:text-5xl font-bold text-center leading-tight">
                 Get some interesting insights on your songs
               </h1>
               <div>
-                {loading && (
-                  <div className="mt-4 mb-4">
-                    <Progress 
-                      colour={'#1ed760'} 
-                      percentage={progress} 
-                      loading={loading}
-                      message={loadingMessage}
-                    />
-                  </div>
-                )}
-                <LanguageAnalysis enrichedSongs={userData.enrichedSongs || []} />
+                {userData.fetched.enrichedSongs && userData.enrichedSongs && (
+                  <LanguageAnalysis enrichedSongs={userData.enrichedSongs || []} />
+                )} 
               </div>
             </main>
           } />
         </Routes>
-        <Footer userData={userData} loading={loading} onConnect={connectToSpotify} />
+
+        {/* Loading progress */}
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+          {loading.global && (
+            <div className="mt-4 mb-4">
+              {/* <Progress 
+              stage="Global"
+              percentage={progress.global} 
+              loading={loading.global}
+              message={loadingMessage}
+            /> */}
+            <Progress 
+              stage="Fetching data"
+              percentage={progress.dataFetching} 
+              loading={loading.global}
+            />
+            <Progress 
+              stage="Filtering unplayables"
+              percentage={progress.unplayablesFiltering} 
+              loading={loading.unplayablesFiltering}
+            />
+            <Progress 
+              stage="Enriching songs"
+              percentage={progress.songEnrichment} 
+              loading={loading.songEnrichment}
+            />
+          </div>
+         )}
+        {loadingMessage && (
+            <div className="mt-2 text-center">
+              <p className="text-gray-600">{loadingMessage}</p>
+            </div>
+          )}
+        </div>
+
+        <Footer userData={userData} loading={loading.global} onConnect={connectToSpotify} />
       </Router>
     </>
   )

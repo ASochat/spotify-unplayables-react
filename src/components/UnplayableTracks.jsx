@@ -2,7 +2,7 @@
 const UnplayableTracks = (props) => {
     const userName = props.userData.profile.display_name;
     const unplayablesNumber = props.userData.unplayables.length;
-    const display = props.userData.fetched ? '' : 'hidden';
+    const display = props.userData.fetched.unplayables ? '' : 'hidden';
   
     return (
       <div className={`mt-8 ${display}`}>
