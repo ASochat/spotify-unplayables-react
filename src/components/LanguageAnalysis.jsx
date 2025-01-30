@@ -20,9 +20,9 @@ const LanguageAnalysis = ({ enrichedSongs }) => {
             {enrichedSongs.map((song, index) => (
               <tr key={index} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-gray-100`}>
                 <td className="w-12 px-2 py-4 whitespace-nowrap text-sm text-gray-350">{index + 1}</td>
-                <td className="w-2/5 px-2 py-4 text-sm text-gray-900 truncate">{song.title}</td>
-                <td className="w-1/4 max-w-80 px-2 py-4 text-sm text-gray-900 truncate">{song.artist}</td>
-                <td className="w-24 px-2 py-4 whitespace-nowrap text-sm text-gray-900">{song.language}</td>
+                <td className="w-2/5 max-w-60 px-2 py-4 text-sm text-gray-900 truncate">{song.title}</td>
+                <td className="w-1/4 max-w-60 px-2 py-4 text-sm text-gray-900 truncate">{song.artist}</td>
+                <td className="w-24 max-w-60 px-2 py-4 whitespace-nowrap text-sm text-gray-900 truncate">{song.language}</td>
                 <td className="w-24 px-2 py-4 whitespace-nowrap text-sm text-gray-350">
                   {song.geniusCoherence?.toFixed(2)}
                 </td>

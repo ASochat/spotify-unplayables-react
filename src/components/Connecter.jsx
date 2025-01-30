@@ -1,10 +1,10 @@
 const Connecter = ({ loading, userData, onClick }) => {
     const display = loading.global ? 'hidden' : '';
-    const variant = userData.fetched 
+    const variant = userData.fetched.global
       ? 'bg-white text-spotify-green border-2 border-spotify-green hover:bg-spotify-green-dark hover:text-white hover:border-spotify-green-dark' 
       : 'bg-spotify-green text-white border-2 border-spotify-green hover:bg-spotify-green-dark hover:border-spotify-green-dark';
   
-    const text = userData.fetched ? 'Refresh your data' : 'Connect to Spotify to fetch your songs';
+    const text = userData.fetched.global ? 'Refresh your data' : 'Connect to Spotify to fetch your songs';
   
     return (
       <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex justify-center ${display}`}>
