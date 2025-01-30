@@ -1,4 +1,4 @@
-
+import Connecter from './Connecter.jsx'
 const Footer = ({ userData, loading, onConnect }) => {
     return (
       <footer className="mt-auto">

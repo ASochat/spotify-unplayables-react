@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 const Navigation = () => {
     return (
       <nav className="w-full border-b border-gray-200 bg-body-bg">
@@ -26,4 +28,4 @@ const Navigation = () => {
   }
 
 
-export default LanguageAnalysis;
+export default Navigation;

@@ -15,11 +15,6 @@ import { redirectToAuthCodeFlow, getAccessToken } from './modules/spotify_connec
 import { fetchAllSongs, fetchProfile, fetchTopTracks, filterUnplayables } from './modules/spotify_fetch.js'
 import { enrichSongsWithLyricsAndLanguage } from './modules/lyrics_and_language.js'
 
-// Import Bootstrap components
-// import 'bootstrap/dist/css/bootstrap.min.css'; // Hmmm... This is only for CSS, NOT Sass. Necessary?
-// import './App.scss' - Bootstrap.css is abandoned
-import { Table, Form, Button } from 'react-bootstrap'
-
 // Import created components
 import Progress from './components/Progress.jsx'
 import LanguageAnalysis from './components/LanguageAnalysis.jsx'
@@ -315,7 +310,7 @@ const App = (props) => {
             </main>
           } />
           <Route path="/insights" element={
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
               <div>
                 {loading && (
                   <div className="mt-4 mb-4">
