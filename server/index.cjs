@@ -62,13 +62,13 @@ app.get('/api/genius/search', async (req, res) => {
 app.get('/api/lyrics', async (req, res) => {
     try {
         const { url } = req.query;
-        console.log('Attempting to fetch lyrics from:', url);  // Log the URL being requested
+        console.log('Attempting to fetch lyrics from:', url);
         
         const response = await axios.get(url, {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.5',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+                'Accept-Language': 'en-US,en;q=0.9',
                 'Accept-Encoding': 'gzip, deflate, br',
                 'Connection': 'keep-alive',
                 'Upgrade-Insecure-Requests': '1',
@@ -76,23 +76,31 @@ app.get('/api/lyrics', async (req, res) => {
                 'Sec-Fetch-Mode': 'navigate',
                 'Sec-Fetch-Site': 'none',
                 'Sec-Fetch-User': '?1',
-                'Cache-Control': 'max-age=0'
+                'Cache-Control': 'max-age=0',
+                'sec-ch-ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+                'sec-ch-ua-mobile': '?0',
+                'sec-ch-ua-platform': '"Windows"',
+                'Referer': 'https://genius.com/',
+                'DNT': '1',
+                'Pragma': 'no-cache'
             },
             validateStatus: function (status) {
-                return status < 500; // Resolve only if status is less than 500
-            }
+                return status < 500;
+            },
+            maxRedirects: 5,
+            timeout: 10000
         });
         
         if (response.status === 403) {
-            console.error('Access forbidden by Genius. Response:', {
+            console.error('Access forbidden by Genius (Cloudflare protection). Response:', {
                 status: response.status,
                 statusText: response.statusText,
-                headers: response.headers,
-                data: response.data
+                headers: response.headers
             });
             return res.status(403).json({
-                error: 'Access forbidden by Genius',
-                details: response.data
+                error: 'Access forbidden by Genius (Cloudflare protection)',
+                message: 'Unable to access lyrics due to website protection',
+                url: url
             });
         }
         
@@ -103,13 +111,13 @@ app.get('/api/lyrics', async (req, res) => {
             status: error.response?.status,
             statusText: error.response?.statusText,
             url: req.query.url,
-            responseData: error.response?.data,
             responseHeaders: error.response?.headers
         });
         
-        res.status(500).send({
+        res.status(500).json({
             error: error.message,
-            details: error.response?.data
+            message: 'Failed to fetch lyrics',
+            url: req.query.url
         });
     }
 });
