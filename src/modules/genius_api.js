@@ -80,7 +80,9 @@ const optimizeMoreQuery = (title, artist) => {
 }
 
 export const searchSong = async (options) => {
-    const CoherenceScoreThreshold = 0.33;
+    const CoherenceScoreThreshold = 0.33;   
+    const API_URL = import.meta.env.API_URL || 'http://localhost:3000';
+    console.log('API_URL in genius_api.js:', API_URL);
     try {
         // Separate title and artist processing
         let searchQuery = options.optimizeQuery 
@@ -92,7 +94,7 @@ export const searchSong = async (options) => {
         // console.log('Final search query:', searchQuery);
 
         // Use our proxy server instead of direct Genius API call
-        let searchResponse = await axios.get(`http://localhost:3000/api/genius/search`, {
+        let searchResponse = await axios.get(`${API_URL}/api/genius/search`, {
             params: {
                 q: searchQuery,
                 access_token: options.apiKey
@@ -105,7 +107,7 @@ export const searchSong = async (options) => {
             console.log("No results found for: ", searchQuery, "- trying again with re-optimized query");
             searchQuery = optimizeMoreQuery(options.title, options.artist).searchQuery;
             console.log("Trying again with search query: ", searchQuery);
-            searchResponse = await axios.get(`http://localhost:3000/api/genius/search`, {
+            searchResponse = await axios.get(`${API_URL}/api/genius/search`, {
                 params: {
                     q: searchQuery,
                     access_token: options.apiKey
@@ -137,7 +139,7 @@ export const searchSong = async (options) => {
                 // Need to retry with a different search query
                 searchQuery = optimizeMoreQuery(options.title, options.artist).searchQuery;
                 console.log("Trying again with search query: ", searchQuery);  
-                searchResponse = await axios.get(`http://localhost:3000/api/genius/search`, {
+                searchResponse = await axios.get(`${API_URL}0/api/genius/search`, {
                     params: {
                         q: searchQuery,
                         access_token: options.apiKey

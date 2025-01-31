@@ -1,5 +1,4 @@
 require('dotenv').config({ path: '../.env' });
-const http = require('http') 
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
@@ -9,14 +8,17 @@ const app = express();
 // Make sure this line works!
 // Can't use import.meta.env.MODE because it's not available in CJS
 const isProduction = process.env.NODE_ENV === 'production';
-console.log(process.env.NODE_ENV)
+console.log('process.env:', process.env);
+console.log('Node ENV:', process.env.NODE_ENV);
+console.log('PORT:', process.env.PORT);
+console.log('isProduction:', isProduction);
 
-app.use(cors());
-
-// Only serve static files in production
-if (isProduction) {
-    app.use(express.static(path.join(__dirname, '../dist')));
-}
+// Update CORS configuration to be more specific
+app.use(cors({
+  origin: isProduction ? 'http://localhost:3001' : 'http://localhost:3000',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // API endpoints
 app.get('/api/lyrics', async (req, res) => {
@@ -50,27 +52,38 @@ app.get('/api/lyrics', async (req, res) => {
 app.get('/api/genius/search', async (req, res) => {
     try {
         const { q, access_token } = req.query;
+        console.log('Genius search request:', { query: q, hasToken: !!access_token });
+        
         const response = await axios.get('https://api.genius.com/search', {
             headers: {
                 'Authorization': `Bearer ${access_token}`
             },
             params: { q }
         });
+        console.log('Genius search success');
         res.send(response.data);
     } catch (error) {
-        console.error('Genius API error:', error.message);
+        console.error('Genius API error:', {
+            message: error.message,
+            status: error.response?.status,
+            data: error.response?.data
+        });
         res.status(500).send(error.message);
     }
 });
 
-// Only handle React routing in production
+// Production setup (static files and routing)
 if (isProduction) {
+    // Serve static files from the dist directory
+    app.use(express.static(path.join(__dirname, '../dist')));
+    
+    // Handle all other routes by serving index.html
     app.get('*', (req, res) => {
         res.sendFile(path.join(__dirname, '../dist', 'index.html'));
     });
 }
 
-const PORT = process.env.PORT || 3000;
+const PORT = isProduction ? 3001 : 3000;
 app.listen(PORT, () => {
     console.log(`Server running in ${isProduction ? 'production' : 'development'} mode on port ${PORT}`);
 }); 

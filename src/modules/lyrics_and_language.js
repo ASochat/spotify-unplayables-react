@@ -1,4 +1,3 @@
-
 import { load } from "cheerio"
 import { franc } from 'franc-min'
 import { iso6393 } from 'iso-639-3'
@@ -7,10 +6,13 @@ import axios from 'axios'
 import { searchSong } from './genius_api'
 // import { getSong } from 'genius-lyrics-api'
 
+const API_URL = import.meta.env.API_URL || 'http://localhost:3000';
+console.log('API_URL in lyrics_and_language.js:', API_URL);
+
 const scrapeLyrics = async (url) => {
   try {
     // Use our proxy server instead of direct Genius URL
-    const response = await axios.get(`http://localhost:3000/api/lyrics?url=${encodeURIComponent(url)}`);
+    const response = await axios.get(`${API_URL}/api/lyrics?url=${encodeURIComponent(url)}`);
     const html = response.data;
 
     const $ = load(html);
@@ -170,6 +172,16 @@ export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessTo
     console.log("enrichedSongs: ", enrichedSongs)
     console.log("incoherentSongs: ", incoherentSongs)
     return enrichedSongs;
+}
+
+export async function getLyrics(url) {
+  try {
+    const response = await axios.get(`${API_URL}/api/lyrics?url=${encodeURIComponent(url)}`);
+    const html = response.data;
+    // ... rest of your function
+  } catch (error) {
+    // ... error handling
+  }
 }
 
 
