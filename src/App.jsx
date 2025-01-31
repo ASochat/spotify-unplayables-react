@@ -417,13 +417,15 @@ const App = (props) => {
           
           <Route path="/insights" element={
             <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
-              <h1 className="text-3xl sm:text-5xl font-bold text-center leading-tight">
-                Get some interesting insights on your songs
-              </h1>
-              <div>
+              <div className="space-y-10">
+                <h1 className="text-3xl sm:text-5xl font-bold text-center leading-tight">
+                  Get some interesting <br /> insights on your songs
+                </h1>
+                <div>
                 {userData.fetched.enrichedSongs && userData.enrichedSongs && (
                   <LanguageAnalysis enrichedSongs={userData.enrichedSongs || []} />
                 )} 
+                </div>
               </div>
             </main>
           } />

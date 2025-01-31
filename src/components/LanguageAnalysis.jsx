@@ -3,7 +3,7 @@ const LanguageAnalysis = ({ enrichedSongs }) => {
 
   return (
     <div className={`mt-8 ${display}`}>
-      <h2 className="text-2xl font-bold mb-4">Language Analysis of Your Songs</h2>
+      <h2 className="text-2xl font-bold mb-4 sm:text-4xl text-center">Languages of your Songs</h2>
       
       <div className="max-w-5xl mx-auto overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">

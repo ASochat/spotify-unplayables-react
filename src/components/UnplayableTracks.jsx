@@ -6,7 +6,7 @@ const UnplayableTracks = (props) => {
   
     return (
       <div className={`mt-8 ${display}`}>
-        <h2 className="text-2xl font-bold mb-4">You have {unplayablesNumber} unplayable tracks, {userName}</h2>
+        <h2 className="text-2xl font-bold mb-4 sm:text-4xl text-center">You have {unplayablesNumber} unplayable tracks, {userName}</h2>
         <div className="mb-6 text-gray-600 italic">
           <span>Please note that we don't fetch your local files in your saved tracks.
             Therefore, the number on each track may not be the right one- it still gives an indication on its place in your list.
