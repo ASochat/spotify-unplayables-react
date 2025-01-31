@@ -155,19 +155,21 @@ const App = (props) => {
               throw new Error('Failed to get access token');
             }
 
-            updateLoadingState('Fetching your Spotify profile...', 20, 'dataFetching', 40);
+            updateLoadingState('Fetching your Spotify profile...', 15, 'dataFetching', 15);
             await delay(10);
             const profile = await fetchProfile(accessToken);
 
-            updateLoadingState('Getting your top tracks...', 35, 'dataFetching', 60);
+            updateLoadingState('Getting your top tracks...', 20, 'dataFetching', 20);
             await delay(10);
             const topTracks = await fetchTopTracks(accessToken);
             // Update state immediately with top tracks
             setUserData(prev => ({ ...prev, topTracks }));
 
-            updateLoadingState('Fetching all your saved songs...', 50, 'dataFetching', 80);
+            updateLoadingState('Fetching all your saved songs...', 25, 'dataFetching', 25);
             await delay(10);
-            const allSongs = await fetchAllSongs(accessToken);
+            const allSongs = await fetchAllSongs(accessToken, (progress) => {
+              updateLoadingState(`Fetching all your saved songs... (${progress}%)`, 25 + Math.floor(progress / 100 * 35), 'dataFetching', progress);
+            });
             setUserData(prev => ({ ...prev, 
               allSongs,
               fetched: {...prev.fetched, data: true}  // Mark as fetched when allSongs are fetched

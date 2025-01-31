@@ -5,7 +5,7 @@
   :root {
     --color-test: #ff00ff;
     --spotify-green: #1ed760;
-    --spotify-green-dark: #1ab352;
+    --spotify-green-light: #3CE476;
     --gray-350: #b1b1b1;
   }
 }
@@ -29,8 +29,8 @@
   color: var(--spotify-green);
 }
 
-.text-spotify-green-dark {
-  color: var(--spotify-green-dark);
+.text-spotify-green-light {
+  color: var(--spotify-green-light);
 }
 
 .text-gray-350 {
@@ -41,8 +41,8 @@
   background-color: var(--spotify-green);
 }
 
-.bg-spotify-green-dark {
-  background-color: var(--spotify-green-dark);
+.bg-spotify-green-light {
+  background-color: var(--spotify-green-light);
 }
 
 .bg-gray-350 {
@@ -53,24 +53,24 @@
   border-color: var(--spotify-green);
 }
 
-.border-spotify-green-dark {
-  border-color: var(--spotify-green-dark);
+.border-spotify-green-light {
+  border-color: var(--spotify-green-light);
 }
 
 .hover\:text-spotify-green:hover {
   color: var(--spotify-green);
 }
 
-.hover\:text-spotify-green-dark:hover {
-  color: var(--spotify-green-dark);
+.hover\:text-spotify-green-light:hover {
+  color: var(--spotify-green-light);
 }
 
 .hover\:bg-spotify-green:hover {
   background-color: var(--spotify-green);
 }
 
-.hover\:bg-spotify-green-dark:hover {
-  background-color: var(--spotify-green-dark);
+.hover\:bg-spotify-green-light:hover {
+  background-color: var(--spotify-green-light);
 }
 
 .hover\:bg-gray-350:hover {
@@ -81,8 +81,8 @@
   border-color: var(--spotify-green);
 }
 
-.hover\:border-spotify-green-dark:hover {
-  border-color: var(--spotify-green-dark);
+.hover\:border-spotify-green-light:hover {
+  border-color: var(--spotify-green-light);
 }
 
 /* Text colors */
@@ -93,4 +93,8 @@
 /* Hover states */
 .hover\:text-white:hover {
   color: white;
+}
+
+.hover\:text-black:hover {
+  color: black;
 }

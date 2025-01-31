@@ -36,25 +36,41 @@ async function returnOffset(offset) {
     return offset;
 }
 
-export async function fetchAllSongs(token) {
-    // First check if token exists
+export async function fetchAllSongs(token, updateProgress) {
     if (!token) {
         console.error('No token provided to fetchAllSongs');
         throw new Error('Authentication token is required');
     }
 
-    let offset = 1896;
-    let batchSize = 50; 
+    let offset = 0;
+    let batchSize = 50;
+    let totalTracks = 0;
     var tracks = [];
-    var newTracks = [];
 
     try {
+        // Make initial request to get total number of tracks
+        const initialResult = await fetch("https://api.spotify.com/v1/me/tracks?market=NO&limit=1", {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!initialResult.ok) {
+            throw new Error(`Spotify API error: ${initialResult.status} ${initialResult.statusText}`);
+        }
+
+        const initialData = await initialResult.json();
+        totalTracks = initialData.total;
+        console.log(`Total tracks to fetch: ${totalTracks}`);
+
         while (batchSize == 50) {
             console.log(`Fetching tracks with offset ${offset}, token: ${token.substring(0, 10)}...`);
             
             var result = await fetch("https://api.spotify.com/v1/me/tracks?market=NO&limit=50&offset="+offset, {
-                method: "GET", 
-                headers: { 
+                method: "GET",
+                headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
@@ -75,28 +91,26 @@ export async function fetchAllSongs(token) {
 
             let { items } = await result.json();
             
-            // console.log(items);
-
-            newTracks = items.slice(0, 50).map((item) => ({
+            const newTracks = items.slice(0, 50).map((item) => ({
                 artist: item.track.artists.map((_artist) => _artist.name).join(', '),
                 title: item.track.name,
                 added_at: item.added_at.split('T')[0],
                 songUrl: item.track.external_urls.spotify,
                 is_playable: item.track.is_playable,
-                // available_markets: item.track.available_markets
-              }))
+            }));
 
-            //console.log(offset);
-
-            tracks = tracks.concat(await newTracks);
-
+            tracks = tracks.concat(newTracks);
             batchSize = items.length;
             offset += batchSize;
 
-            // returnOffset(offset); // This doesn't work
+            // Calculate and update progress
+            const progress = Math.round((tracks.length / totalTracks) * 100);
+            if (updateProgress) {
+                updateProgress(progress);
+            }
         }
 
-        console.log("Fetched all songs successfully!");
+        console.log(`Fetched all ${tracks.length}/${totalTracks} songs successfully!`);
         return tracks;
 
     } catch (error) {

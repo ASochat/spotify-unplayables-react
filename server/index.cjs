@@ -20,7 +20,44 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// API endpoints
+// API ROUTES MUST COME BEFORE STATIC FILES
+// Define all API routes first
+app.get('/api/genius/search', async (req, res) => {
+    try {
+        const { q, access_token } = req.query;
+        console.log('Genius search request:', { query: q, hasToken: !!access_token });
+        
+        // Make sure we're calling the Genius API directly
+        const geniusResponse = await axios.get('https://api.genius.com/search', {
+            headers: {
+                'Authorization': `Bearer ${access_token}`,
+                'Accept': 'application/json'
+            },
+            params: { q }
+        });
+
+        // Log the response structure for debugging
+        console.log('Genius API response structure:', {
+            hasResponse: !!geniusResponse.data,
+            hasHits: !!geniusResponse.data?.response?.hits
+        });
+
+        // Send back just the data part
+        res.json(geniusResponse.data);
+    } catch (error) {
+        console.error('Genius API error:', {
+            message: error.message,
+            status: error.response?.status,
+            data: error.response?.data,
+            stack: error.stack
+        });
+        res.status(500).json({
+            error: error.message,
+            details: error.response?.data
+        });
+    }
+});
+
 app.get('/api/lyrics', async (req, res) => {
     try {
         const { url } = req.query;
@@ -48,31 +85,7 @@ app.get('/api/lyrics', async (req, res) => {
     }
 });
 
-// Add new endpoint for Genius API search
-app.get('/api/genius/search', async (req, res) => {
-    try {
-        const { q, access_token } = req.query;
-        console.log('Genius search request:', { query: q, hasToken: !!access_token });
-        
-        const response = await axios.get('https://api.genius.com/search', {
-            headers: {
-                'Authorization': `Bearer ${access_token}`
-            },
-            params: { q }
-        });
-        console.log('Genius search success');
-        res.send(response.data);
-    } catch (error) {
-        console.error('Genius API error:', {
-            message: error.message,
-            status: error.response?.status,
-            data: error.response?.data
-        });
-        res.status(500).send(error.message);
-    }
-});
-
-// Production setup (static files and routing)
+// AFTER all API routes, THEN serve static files
 if (isProduction) {
     // Serve static files from the dist directory
     app.use(express.static(path.join(__dirname, '../dist')));
@@ -83,7 +96,8 @@ if (isProduction) {
     });
 }
 
-const PORT = isProduction ? 3001 : 3000;
+// Always use port 3001
+const PORT = 3001;
 app.listen(PORT, () => {
     console.log(`Server running in ${isProduction ? 'production' : 'development'} mode on port ${PORT}`);
 }); 

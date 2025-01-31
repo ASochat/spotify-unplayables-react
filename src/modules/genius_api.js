@@ -80,9 +80,12 @@ const optimizeMoreQuery = (title, artist) => {
 }
 
 export const searchSong = async (options) => {
-    const CoherenceScoreThreshold = 0.33;   
-    const API_URL = import.meta.env.API_URL || 'http://localhost:3000';
-    console.log('API_URL in genius_api.js:', API_URL);
+    const CoherenceScoreThreshold = 0.33;  
+    // Always use port 3001 for API calls
+    const API_URL = 'http://localhost:3001';
+    // const API_URL = import.meta.env.API_URL || 'http://localhost:3000'; // This was the previous way to get the API_URL
+    // console.log('Options in genius_api.js searchSong: ', options);
+    // console.log('API_URL in genius_api.js:', API_URL);
     try {
         // Separate title and artist processing
         let searchQuery = options.optimizeQuery 
@@ -100,6 +103,8 @@ export const searchSong = async (options) => {
                 access_token: options.apiKey
             }
         });
+
+        // console.log("Search response: ", searchResponse);
 
         let hits = searchResponse.data.response.hits;
 
