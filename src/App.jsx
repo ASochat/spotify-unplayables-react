@@ -5,7 +5,6 @@ if (import.meta.env.DEV) {
 // Global imports
 import { useEffect, useState, useRef } from 'react'
 import { BrowserRouter as Router, Routes, Route, Link, NavLink } from 'react-router-dom'
-// import axios from 'axios'
 
 // Import created modules
 import { redirectToAuthCodeFlow, getAccessToken } from './modules/spotify_connect'
