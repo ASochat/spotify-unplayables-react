@@ -6,9 +6,12 @@ import axios from 'axios'
 import { searchSong } from './genius_api'
 // import { getSong } from 'genius-lyrics-api'
 
-// Always use port 3001 for API calls
-const API_URL = 'http://localhost:3001';
-// const API_URL = import.meta.env.API_URL || 'http://localhost:3000'; // This was the previous way to get the API_URL
+// Get the appropriate API URL from environment variable
+const API_URL = import.meta.env.VITE_API_URL;
+
+if (import.meta.env.DEV) {
+    console.log('API_URL in lyrics_and_language.js:', API_URL);
+}
 
 const scrapeLyrics = async (url) => {
   try {

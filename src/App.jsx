@@ -158,6 +158,9 @@ const App = (props) => {
 
       try {
         if (!userData.fetched.global && URLparamCode && !isCodeUsed) {
+          // Store the user code in localStorage first thing
+          localStorage.setItem('spotify_user_code', URLparamCode);
+
           isFetchingRef.current = true;
           updateLoadingState("Starting fetching...", 5, 'dataFetching', 5);
           setLoading(prev => ({
@@ -274,7 +277,6 @@ const App = (props) => {
             };
             setUserData(newUserData);
             localStorage.setItem('user_data', JSON.stringify(newUserData));
-            localStorage.setItem('spotify_user_code', URLparamCode);
             
             updateLoadingState('Complete!', 100);
             await delay(500); // Show completion briefly

@@ -5,7 +5,7 @@ const cors = require('cors');
 const axios = require('axios');
 const app = express();
 
-// Make sure this line works!
+
 // Can't use import.meta.env.MODE because it's not available in CJS
 const isProduction = process.env.NODE_ENV === 'production';
 // console.log('process.env:', process.env);
@@ -13,11 +13,12 @@ console.log('Node ENV:', process.env.NODE_ENV);
 // console.log('PORT:', process.env.PORT);
 console.log('isProduction:', isProduction);
 
-// Update CORS configuration to be more specific
+// CORS configuration
 app.use(cors({
-  origin: isProduction ? 'http://localhost:3001' : 'http://localhost:3000',
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: isProduction 
+    ? ['https://unplayables.soch.at', 'http://localhost:3001']  // Production (both remote and local)
+    : 'http://localhost:3000',                                   // Development
+  credentials: true
 }));
 
 // API ROUTES MUST COME BEFORE STATIC FILES
@@ -99,7 +100,7 @@ if (isProduction) {
 // Always use port 3001
 const PORT = 3001;
 app.listen(PORT, () => {
-    console.log(`Server running in ${isProduction ? 'production' : 'development'} mode on port ${PORT}`);
+    console.log(`Server running on port ${PORT} in ${isProduction ? 'production' : 'development'} mode`);
 }); 
 
 

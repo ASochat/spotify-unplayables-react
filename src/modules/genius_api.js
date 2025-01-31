@@ -79,10 +79,17 @@ const optimizeMoreQuery = (title, artist) => {
     return {searchQuery, cleanTitle, cleanArtist};
 }
 
+// Get the appropriate API URL from environment variable
+const API_URL = import.meta.env.VITE_API_URL;
+
+if (import.meta.env.DEV) {
+    console.log('API_URL in genius_api.js:', API_URL);
+}
+
 export const searchSong = async (options) => {
     const CoherenceScoreThreshold = 0.33;  
     // Always use port 3001 for API calls
-    const API_URL = 'http://localhost:3001';
+    // const API_URL = 'http://localhost:3001';
     // const API_URL = import.meta.env.API_URL || 'http://localhost:3000'; // This was the previous way to get the API_URL
     // console.log('Options in genius_api.js searchSong: ', options);
     // console.log('API_URL in genius_api.js:', API_URL);
