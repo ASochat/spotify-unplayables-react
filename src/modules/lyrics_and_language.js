@@ -71,7 +71,7 @@ const getSongWithRetry = async (options, retryCount = 0) => {
     }
 };
 
-export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessToken, batchSize) {
+export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessToken, batchSize, signal) {
     // Process songs in smaller batches to avoid rate limiting.
     // An idea could be divide this by 2 each time there's an error. 
     // const batchSize = 20; => now a function parameter
@@ -80,6 +80,12 @@ export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessTo
     const incoherentSongs = [];
 
     for (let i = 0; i < songsList.length; i += batchSize) {
+        // Check if the process was cancelled
+        if (signal?.aborted) {
+            console.log('Lyrics enrichment process cancelled');
+            throw new Error('Process cancelled');
+        }
+
         const batch = songsList.slice(i, i + batchSize);
         
         // Add delay between batches
@@ -89,6 +95,11 @@ export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessTo
 
         const batchResults = await Promise.all(
             batch.map(async (song) => {
+                // Check for cancellation before each song
+                if (signal?.aborted) {
+                    throw new Error('Process cancelled');
+                }
+
                 const options = {
                     apiKey: geniusAccessToken,
                     title: song.title,
@@ -158,6 +169,9 @@ export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessTo
                         language: 'Genius doesn\'t have lyrics for this song'
                     };
                 } catch (error) {
+                    if (signal?.aborted) {
+                        throw new Error('Process cancelled');
+                    }
                     console.error(`Error processing ${song.title}:`, error);
                     return {
                         ...song,

@@ -75,10 +75,37 @@ const App = (props) => {
     JSON.parse(localStorage.getItem('user_data'))
     : emptyUserData;
 
+  // Add this at component level
+  const abortController = useRef(null);
+
   const connectToSpotify = () => {
+    if (loading.global) {
+      // Stop all ongoing requests
+      window.stop();
+      // Abort any ongoing fetch requests
+      if (abortController.current) {
+        console.log('Aborting requests...', abortController.current);
+        abortController.current.abort();
+      } else {
+        console.log('No abort controller found');
+      }
+      // Reset loading state
+      setLoading({
+        global: false,
+        dataFetching: false,
+        unplayablesFiltering: false,
+        songEnrichment: false
+      });
+      window.stop(); // This stops all ongoing requests
+      return;
+    }
+
+    // Start new connection
+    abortController.current = new AbortController();
+    console.log('Created new abort controller:', abortController.current);
     localStorage.removeItem('user_data');
     setUserData(emptyUserData);
-    redirectToAuthCodeFlow(appClientId, redirectUrl)
+    redirectToAuthCodeFlow(appClientId, redirectUrl);
   }
 
   // DECIDED TO LOAD THE USERDATA DIRECTLY FROM MAIN
@@ -204,10 +231,16 @@ const App = (props) => {
             const chunkSize = 50;
             const totalChunks = Math.ceil((allSongs?.length || 0) / chunkSize);
             
+            // Make sure we have a fresh AbortController
+            if (!abortController.current) {
+              abortController.current = new AbortController();
+              console.log('Created new abort controller in fetchSpotifyData:', abortController.current);
+            }
+
             for (let i = 0; i < (allSongs?.length || 0); i += chunkSize) {
                 const chunk = allSongs.slice(i, i + chunkSize);
-                const currentChunk = Math.floor(i / chunkSize) + 1; // Progress from 70% to 95%
-                const progressValue = Math.floor((currentChunk / totalChunks) * 100); // Progress from 70% to 95%
+                const currentChunk = Math.floor(i / chunkSize) + 1;
+                const progressValue = Math.floor((currentChunk / totalChunks) * 100);
                 const globalProgressValue = 75 + Math.floor((currentChunk / totalChunks) * 20);
 
                 updateLoadingState(
@@ -218,7 +251,13 @@ const App = (props) => {
                 );
                 
                 await delay(10);
-                const enrichedChunk = await enrichSongsWithLyricsAndLanguage(chunk, geniusAccessToken, chunkSize);
+                console.log('Current abort controller signal:', abortController.current?.signal);
+                const enrichedChunk = await enrichSongsWithLyricsAndLanguage(
+                    chunk, 
+                    geniusAccessToken, 
+                    chunkSize,
+                    abortController.current?.signal
+                );
                 enrichedSongs.push(...enrichedChunk);
                 
                 // Update enrichedSongs progressively
@@ -250,6 +289,9 @@ const App = (props) => {
             
           } catch (error) {
             console.error('Error fetching Spotify data:', error);
+            if (error.name === 'AbortError') {
+              console.log('Operation was aborted');
+            }
           } finally {
             setLoading({
               global: false,
@@ -263,6 +305,9 @@ const App = (props) => {
         }
       } catch (error) {
         console.error('Error in fetchSpotifyData:', error);
+        if (error.name === 'AbortError') {
+          console.log('Operation was aborted');
+        }
         setLoading({
           global: false,
           dataFetching: false,
