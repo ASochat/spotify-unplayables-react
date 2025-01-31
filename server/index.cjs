@@ -8,9 +8,9 @@ const app = express();
 // Make sure this line works!
 // Can't use import.meta.env.MODE because it's not available in CJS
 const isProduction = process.env.NODE_ENV === 'production';
-console.log('process.env:', process.env);
+// console.log('process.env:', process.env);
 console.log('Node ENV:', process.env.NODE_ENV);
-console.log('PORT:', process.env.PORT);
+// console.log('PORT:', process.env.PORT);
 console.log('isProduction:', isProduction);
 
 // Update CORS configuration to be more specific

@@ -5,6 +5,7 @@
   "type": "module",
   "overrides": {},
   "scripts": {
+    "install": "npm install && cd server && npm install",
     "dev": "vite",
     "build": "vite build",
     "devserver": "cd server && NODE_ENV=development nodemon index.cjs",
