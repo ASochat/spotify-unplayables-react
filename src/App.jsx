@@ -180,6 +180,10 @@ const App = (props) => {
             updateLoadingState('Fetching your Spotify profile...', 15, 'dataFetching', 15);
             await delay(10);
             const profile = await fetchProfile(accessToken);
+            setUserData(prev => ({ 
+              ...prev, 
+              profile
+            }));
 
             updateLoadingState('Getting your top tracks...', 20, 'dataFetching', 20);
             await delay(10);

@@ -42,7 +42,7 @@ export async function fetchAllSongs(token, updateProgress) {
         throw new Error('Authentication token is required');
     }
 
-    let offset = 1800;
+    let offset = 0;
     let batchSize = 50;
     let totalTracks = 0;
     var tracks = [];
