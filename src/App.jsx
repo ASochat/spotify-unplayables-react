@@ -1,9 +1,6 @@
-///////////// GENERAL ADVICE ///////////////
-// - Use React Developer Tools Chrome Extension to access components and props right from the console.
-// - 2 ways of setting the profile: async await the connect function and call the const "profile" in another function "afterConnect", OR call setProfile after the .then.
-////////////////////////////////////////////
-
-console.log('START APP.JSX')
+if (import.meta.env.DEV) {
+  console.log('START APP.JSX')
+}
 
 // Global imports
 import { useEffect, useState, useRef } from 'react'
@@ -36,7 +33,6 @@ const App = (props) => {
   let appClientId = '';
   let redirectUrl = '';
   const environment = import.meta.env.MODE;
-  // console.log('import meta env:', import.meta.env);
 
   if (environment == 'development') {
     appClientId = import.meta.env.VITE_SPOTIFY_APP_CLIENT_ID_DEV
@@ -45,9 +41,6 @@ const App = (props) => {
     appClientId = import.meta.env.VITE_SPOTIFY_APP_CLIENT_ID_PROD
     redirectUrl = import.meta.env.VITE_REDIRECT_URL_PROD 
   }
-
-  // console.log(appClientId, redirectUrl);
-
 
   // Actually we could get rid of the access token code here if we store the data and don't fetch it twice...
   const accessToken = localStorage.getItem("access_token");
@@ -102,7 +95,6 @@ const App = (props) => {
 
     // Start new connection
     abortController.current = new AbortController();
-    console.log('Created new abort controller:', abortController.current);
     localStorage.removeItem('user_data');
     setUserData(emptyUserData);
     redirectToAuthCodeFlow(appClientId, redirectUrl);
@@ -143,13 +135,14 @@ const App = (props) => {
         global: globalProgressValue,
         [stage]: stageProgressValue,
       }));
+      console.log(`${message} (${globalProgressValue}%) - ${stage}: ${stageProgressValue}%`);
     } else {
       setProgress(prev => ({
         ...prev,
         global: globalProgressValue,
       }));
+      console.log(`${message} (${globalProgressValue}%)`);
     }
-    console.log(`${message} (${globalProgressValue}%) - ${stage}: ${stageProgressValue}%`);
   };
 
   // Genius API access token
@@ -174,7 +167,7 @@ const App = (props) => {
           }));
           
           try {
-            updateLoadingState("Getting access token...", 10, 'dataFetching', 20);
+            updateLoadingState("Getting access token...", 10, 'dataFetching', 10);
             await delay(10);
             const accessToken = await getAccessToken(appClientId, URLparamCode, redirectUrl);
             
@@ -195,7 +188,7 @@ const App = (props) => {
             updateLoadingState('Fetching all your saved songs...', 25, 'dataFetching', 25);
             await delay(10);
             const allSongs = await fetchAllSongs(accessToken, (progress) => {
-              updateLoadingState(`Fetching all your saved songs... (${progress}%)`, 25 + Math.floor(progress / 100 * 35), 'dataFetching', progress);
+              updateLoadingState(`Fetching all your saved songs... (${progress.tracksLength} of ${progress.totalTracks})`, 25 + Math.floor(progress.percentage / 100 * 35), 'dataFetching', 25 + Math.floor(progress.percentage / 100 * 75));
             });
             setUserData(prev => ({ ...prev, 
               allSongs,
@@ -234,7 +227,6 @@ const App = (props) => {
             // Make sure we have a fresh AbortController
             if (!abortController.current) {
               abortController.current = new AbortController();
-              console.log('Created new abort controller in fetchSpotifyData:', abortController.current);
             }
 
             for (let i = 0; i < (allSongs?.length || 0); i += chunkSize) {
@@ -251,7 +243,6 @@ const App = (props) => {
                 );
                 
                 await delay(10);
-                console.log('Current abort controller signal:', abortController.current?.signal);
                 const enrichedChunk = await enrichSongsWithLyricsAndLanguage(
                     chunk, 
                     geniusAccessToken, 
@@ -267,6 +258,8 @@ const App = (props) => {
                     fetched: {...prev.fetched, enrichedSongs: true}
                 }));
             }
+            console.log('Enriched Songs: ', enrichedSongs)
+            console.log('Incoherent Songs: ', enrichedSongs.filter(song => !song.geniusDeemedCoherent))
 
             updateLoadingState('Saving your data...', 95);
             await delay(10);
@@ -328,8 +321,6 @@ const App = (props) => {
     fetchSpotifyData();
   }, [URLparamCode, userData.fetched.global, isCodeUsed]);
 
-  // const test = new Date("2020-05-12T23:50:21.817Z");
-  // console.log(test, test.toLocaleDateString());
 
   // Progress percentage
   const [percentage, setPercentage] = useState(0)

@@ -144,7 +144,7 @@ export const searchSong = async (options) => {
                 // Need to retry with a different search query
                 searchQuery = optimizeMoreQuery(options.title, options.artist).searchQuery;
                 console.log("Trying again with search query: ", searchQuery);  
-                searchResponse = await axios.get(`${API_URL}0/api/genius/search`, {
+                searchResponse = await axios.get(`${API_URL}/api/genius/search`, {
                     params: {
                         q: searchQuery,
                         access_token: options.apiKey

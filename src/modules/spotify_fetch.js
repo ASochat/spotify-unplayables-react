@@ -42,7 +42,7 @@ export async function fetchAllSongs(token, updateProgress) {
         throw new Error('Authentication token is required');
     }
 
-    let offset = 0;
+    let offset = 1800;
     let batchSize = 50;
     let totalTracks = 0;
     var tracks = [];
@@ -66,7 +66,7 @@ export async function fetchAllSongs(token, updateProgress) {
         console.log(`Total tracks to fetch: ${totalTracks}`);
 
         while (batchSize == 50) {
-            console.log(`Fetching tracks with offset ${offset}, token: ${token.substring(0, 10)}...`);
+            // console.log(`Fetching tracks with offset ${offset}, token: ${token.substring(0, 10)}...`);
             
             var result = await fetch("https://api.spotify.com/v1/me/tracks?market=NO&limit=50&offset="+offset, {
                 method: "GET",
@@ -104,7 +104,11 @@ export async function fetchAllSongs(token, updateProgress) {
             offset += batchSize;
 
             // Calculate and update progress
-            const progress = Math.round((tracks.length / totalTracks) * 100);
+            const progress = {
+                percentage: Math.round((tracks.length / totalTracks) * 100),
+                tracksLength: tracks.length,
+                totalTracks: totalTracks
+            };
             if (updateProgress) {
                 updateProgress(progress);
             }

@@ -9,7 +9,6 @@ import { searchSong } from './genius_api'
 // Always use port 3001 for API calls
 const API_URL = 'http://localhost:3001';
 // const API_URL = import.meta.env.API_URL || 'http://localhost:3000'; // This was the previous way to get the API_URL
-console.log('API_URL in lyrics_and_language.js:', API_URL);
 
 const scrapeLyrics = async (url) => {
   try {
@@ -185,8 +184,8 @@ export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessTo
         enrichedSongs.push(...batchResults);
         console.log(`Processed ${enrichedSongs.length} of ${songsList.length} songs`);
     }
-    console.log("enrichedSongs: ", enrichedSongs)
-    console.log("incoherentSongs: ", incoherentSongs)
+    // console.log("enrichedSongs: ", enrichedSongs)
+    // console.log("incoherentSongs: ", incoherentSongs)
     return enrichedSongs;
 }
 

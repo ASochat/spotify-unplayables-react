@@ -1,4 +1,6 @@
-console.log('STARTING MAIN.JSX')
+if (import.meta.env.DEV) {
+    console.log('STARTING MAIN.JSX')
+}
 
 // Import main modules
 import { StrictMode } from 'react'
