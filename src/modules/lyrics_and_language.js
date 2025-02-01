@@ -1,9 +1,10 @@
 import { load } from "cheerio"
 import { franc } from 'franc-min'
 import { iso6393 } from 'iso-639-3'
+import ISO6391 from 'iso-639-1'
 import axios from 'axios'
 // We're using our own Genius API wrapper instead of genius-lyrics-api
-import { searchSong } from './genius_api'
+import { searchSong, getSongDetails } from './genius_api'
 // import { getSong } from 'genius-lyrics-api'
 
 // Get the appropriate API URL from environment variable
@@ -13,6 +14,7 @@ if (import.meta.env.DEV) {
     console.log('API_URL in lyrics_and_language.js:', API_URL);
 }
 
+// We don't use this function anymore because blocked by Cloudflare in remote live
 const scrapeLyrics = async (url) => {
   try {
     // Use our proxy server instead of direct Genius URL
@@ -45,7 +47,8 @@ const scrapeLyrics = async (url) => {
   }
 };
 
-const getLanguage = async (lyrics) => {
+// We used to use this function to get the language from the lyrics, but scrapeLyrics doesn't work in remote live, blocked by Cloudflare
+const getLanguageFromLyrics = async (lyrics) => {
     if (lyrics === "Instrumental") {
         return "Instrumental";
     }
@@ -73,7 +76,7 @@ const getSongWithRetry = async (options, retryCount = 0) => {
     }
 };
 
-export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessToken, batchSize, signal) {
+export async function enrichSongsWithGenius(songsList, geniusAccessToken, batchSize, signal) {
     // Process songs in smaller batches to avoid rate limiting.
     // An idea could be divide this by 2 each time there's an error. 
     // const batchSize = 20; => now a function parameter
@@ -134,14 +137,29 @@ export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessTo
                                 geniusArtist: geniusSong.artist,
                                 geniusCoherence: geniusSong.geniusCoherence,
                                 geniusDeemedCoherent: geniusSong.geniusDeemedCoherent,
-                                lyrics,
+                                lyricsUrl: geniusSong.url,
                                 language
                             };
                         }
 
-                        lyrics = await scrapeLyrics(geniusSong.url);
+                        // We don't fetch lyrics because blocked by Cloudflare in remote live
+                        // lyrics = await scrapeLyrics(geniusSong.url);
                         try {
-                            const language = await getLanguage(lyrics);
+                            const songDetails = await getSongDetails(geniusSong.id, geniusAccessToken);
+                            // console.log(`songDetails for ${geniusSong.title} by ${geniusSong.artist}: `, songDetails)
+
+                            // if (lyrics === "Instrumental") {
+                            //     return "Instrumental";
+                            // }
+                            
+                            // Log the incoming data
+                            // Log the search attempt
+                            const languageCode = songDetails.languageCode
+                            console.log('Language code from Genius:', languageCode);
+
+                            const language = languageCode ? ISO6391.getName(languageCode) : 'Unknown';
+                            console.log('Resolved language:', language);
+
                             return {
                                 ...song,
                                 geniusTitle: geniusSong.title,
@@ -149,8 +167,8 @@ export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessTo
                                 geniusCoherence: geniusSong.geniusCoherence,
                                 geniusDeemedCoherent: geniusSong.geniusDeemedCoherent,
                                 lyricsUrl: geniusSong.url,
-                                lyrics,
-                                language
+                                description: songDetails.description,
+                                language: language
                             };
                         } catch (error) {
                             return {
@@ -160,14 +178,14 @@ export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessTo
                                 geniusCoherence: geniusSong.geniusCoherence,
                                 geniusDeemedCoherent: geniusSong.geniusDeemedCoherent,
                                 lyricsUrl: geniusSong.url,
-                                lyrics,
-                                language: 'Error getting language'
+                                description: 'Error getting song Details',
+                                language: 'Error getting song Details'
                             };
                         }
                     }
                     return {
                         ...song,
-                        lyrics: 'Genius doesn\'t have lyrics for this song',
+                        lyricsUrl: 'Genius doesn\'t have lyrics for this song',
                         language: 'Genius doesn\'t have lyrics for this song'
                     };
                 } catch (error) {
@@ -177,8 +195,8 @@ export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessTo
                     console.error(`Error processing ${song.title}:`, error);
                     return {
                         ...song,
-                        lyrics: 'Error getting lyrics',
-                        language: 'Error getting lyrics'
+                        lyricsUrl: 'Error getting Genius',
+                        language: 'Error getting Genius'
                     };
                 }
             })
@@ -190,16 +208,6 @@ export async function enrichSongsWithLyricsAndLanguage(songsList, geniusAccessTo
     // console.log("enrichedSongs: ", enrichedSongs)
     // console.log("incoherentSongs: ", incoherentSongs)
     return enrichedSongs;
-}
-
-export async function getLyrics(url) {
-  try {
-    const response = await axios.get(`${API_URL}/api/lyrics?url=${encodeURIComponent(url)}`);
-    const html = response.data;
-    // ... rest of your function
-  } catch (error) {
-    // ... error handling
-  }
 }
 
 

@@ -59,6 +59,31 @@ app.get('/api/genius/search', async (req, res) => {
     }
 });
 
+app.get('/api/genius/songs', async (req, res) => {
+    try {
+        const { songId, access_token } = req.query;
+        console.log(`Genius song details request on URL: https://api.genius.com/songs/${songId}`);
+
+        const geniusResponse = await axios.get(`https://api.genius.com/songs/${songId}`, {
+            headers: {
+                'Authorization': `Bearer ${access_token}`,
+                'Accept': 'application/json'
+            },
+            params: { songId }
+        });
+        
+        res.json(geniusResponse.data);
+    } catch (error) {
+        console.error('Genius API error:', {
+            message: error.message,
+            status: error.response?.status,
+            data: error.response?.data,
+            stack: error.stack
+        });
+        res.status(500).json({ error: error.message });
+    }
+});
+
 app.get('/api/lyrics', async (req, res) => {
     try {
         const { url } = req.query;

@@ -196,3 +196,45 @@ export const searchSong = async (options) => {
     }
 };
 
+const domToHtml = (node) => {
+    if (typeof node === 'string') return node;
+    if (!node) return '';
+    
+    if (Array.isArray(node)) {
+        return node.map(child => domToHtml(child)).join('');
+    }
+
+    const { tag, children, attributes = {} } = node;
+    if (!tag) return '';
+
+    const attrs = Object.entries(attributes)
+        .map(([key, value]) => ` ${key}="${value}"`)
+        .join('');
+
+    return `<${tag}${attrs}>${domToHtml(children)}</${tag}>`;
+};
+
+export const getSongDetails = async (songId, apiKey) => {
+    try {
+        const response = await axios.get(`${API_URL}/api/genius/songs`, {
+            params: {
+                songId,
+                access_token: apiKey
+            }
+        });
+        const songDetails = response.data.response.song;
+        
+        const description = domToHtml(songDetails.description.dom);
+        
+        return {
+            id: songId,
+            title: songDetails.title,
+            artist: songDetails.artist,
+            description: description,
+            languageCode: songDetails.language
+        }
+    } catch (error) {
+        console.error('Error getting song details:', error);
+        throw error;
+    }
+}

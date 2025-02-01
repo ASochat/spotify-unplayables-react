@@ -9,7 +9,7 @@ import { BrowserRouter as Router, Routes, Route, Link, NavLink } from 'react-rou
 // Import created modules
 import { redirectToAuthCodeFlow, getAccessToken } from './modules/spotify_connect'
 import { fetchAllSongs, fetchProfile, fetchTopTracks, filterUnplayables } from './modules/spotify_fetch.js'
-import { enrichSongsWithLyricsAndLanguage } from './modules/lyrics_and_language.js'
+import { enrichSongsWithGenius } from './modules/lyrics_and_language.js'
 
 // Import created components
 import { Progress, ProgressSpecific } from './components/Progress'
@@ -249,7 +249,7 @@ const App = (props) => {
                 );
                 
                 await delay(10);
-                const enrichedChunk = await enrichSongsWithLyricsAndLanguage(
+                const enrichedChunk = await enrichSongsWithGenius(
                     chunk, 
                     geniusAccessToken, 
                     chunkSize,
