@@ -42,6 +42,11 @@ export async function fetchAllSongs(token, updateProgress) {
         throw new Error('Authentication token is required');
     }
 
+    // Get user's country from profile
+    const profile = await fetchProfile(token);
+    const market = profile.country || 'US'; // Fallback to US if country not found
+    console.log(`Using market: ${market}`);
+
     let offset = 0;
     let batchSize = 50;
     let totalTracks = 0;
@@ -49,7 +54,7 @@ export async function fetchAllSongs(token, updateProgress) {
 
     try {
         // Make initial request to get total number of tracks
-        const initialResult = await fetch("https://api.spotify.com/v1/me/tracks?market=NO&limit=1", {
+        const initialResult = await fetch(`https://api.spotify.com/v1/me/tracks?market=${market}&limit=1`, {
             method: "GET",
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -68,7 +73,7 @@ export async function fetchAllSongs(token, updateProgress) {
         while (batchSize == 50) {
             // console.log(`Fetching tracks with offset ${offset}, token: ${token.substring(0, 10)}...`);
             
-            var result = await fetch("https://api.spotify.com/v1/me/tracks?market=NO&limit=50&offset="+offset, {
+            var result = await fetch(`https://api.spotify.com/v1/me/tracks?market=${market}&limit=50&offset=${offset}`, {
                 method: "GET",
                 headers: {
                     'Authorization': `Bearer ${token}`,
