@@ -155,10 +155,8 @@ export async function enrichSongsWithGenius(songsList, geniusAccessToken, batchS
                             // Log the incoming data
                             // Log the search attempt
                             const languageCode = songDetails.languageCode
-                            console.log('Language code from Genius:', languageCode);
 
                             const language = languageCode ? ISO6391.getName(languageCode) : 'Unknown';
-                            console.log('Resolved language:', language);
 
                             return {
                                 ...song,

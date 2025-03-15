@@ -206,6 +206,9 @@ const domToHtml = (node) => {
 
     const { tag, children, attributes = {} } = node;
     if (!tag) return '';
+    
+    // Skip image tags
+    if (tag === 'img') return '';
 
     const attrs = Object.entries(attributes)
         .map(([key, value]) => ` ${key}="${value}"`)
@@ -224,7 +227,14 @@ export const getSongDetails = async (songId, apiKey) => {
         });
         const songDetails = response.data.response.song;
         
-        const description = domToHtml(songDetails.description.dom);
+        let description = domToHtml(songDetails.description.dom);
+
+        console.log(`description of song: ${songDetails.title} by ${songDetails.artist} is: `, description)
+        
+        // Set description to undefined if it's just a question mark
+        if (description === '?' || description.trim() === '?') {
+            description = undefined;
+        }
         
         return {
             id: songId,
