@@ -1,4 +1,3 @@
-
 const UnplayableTracks = (props) => {
     const userName = props.userData.profile.display_name;
     const unplayablesNumber = props.userData.unplayables.length;
@@ -21,6 +20,7 @@ const UnplayableTracks = (props) => {
                 <th className="px-2.5 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Title</th>
                 <th className="px-2.5 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Artist</th>
                 <th className="px-2.5 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Added on</th>
+                <th className="px-2.5 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">See on Spotify</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -30,6 +30,17 @@ const UnplayableTracks = (props) => {
                   <td className="px-2.5 py-3 whitespace-nowrap text-sm text-gray-900">{track.title}</td>
                   <td className="px-2.5 py-3 whitespace-nowrap text-sm text-gray-900">{track.artist}</td>
                   <td className="px-2.5 py-3 whitespace-nowrap text-sm text-gray-500">{track.added_at}</td>
+                  <td className="px-2.5 py-3 whitespace-nowrap text-sm text-gray-500">
+                    <a href={track.songUrl} target="_blank" rel="noopener noreferrer">
+                      <button className="text-blue-500 hover:text-blue-700 cursor-pointer p-2">
+                        <img 
+                          src="/Spotify_Primary_Logo_Black_CMYK.svg" 
+                          alt="Play on Spotify" 
+                          className="h-6 w-auto hover:opacity-80 transition-opacity"
+                        />
+                      </button>
+                    </a>
+                  </td>
                 </tr>
               ))}
             </tbody>
