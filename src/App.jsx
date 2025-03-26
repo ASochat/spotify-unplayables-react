@@ -20,7 +20,7 @@ import Connecter from './components/Connecter.jsx'
 import Profile from './components/Profile.jsx'
 import UnplayableTracks from './components/UnplayableTracks.jsx'
 import TopTracks from './components/TopTracks.jsx'
-
+import PrivacyPolicy from './components/PrivacyPolicy.jsx'  
 
 const App = (props) => {
   // console.log('App props: ', props)
@@ -443,6 +443,14 @@ const App = (props) => {
                   <LanguageAnalysis enrichedSongs={userData.enrichedSongs || []} />
                 )} 
                 </div>
+              </div>
+            </main>
+          } />
+
+          <Route path="/privacy-policy" element={
+            <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+              <div className="space-y-10">
+                <PrivacyPolicy />
               </div>
             </main>
           } />

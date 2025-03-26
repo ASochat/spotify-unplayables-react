@@ -21,6 +21,15 @@ const Footer = ({ userData, loading, onConnect, handleLogout }) => {
             >
               antoine@soch.at
             </a>
+            .
+          </p>
+          <p>You can check out the 
+            <a 
+              href="/privacy-policy"
+              className="hover:text-spotify-green-dark transition-colors duration-200 ml-1 underline"
+            > 
+              Privacy Policy
+            </a>.
           </p>
         </div>
       </footer>
