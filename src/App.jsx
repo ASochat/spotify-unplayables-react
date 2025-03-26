@@ -391,6 +391,12 @@ const App = (props) => {
     setUserData(emptyUserData);
   };
 
+  const hideIfLoggedIn = () => {
+    if (userData.fetched.global || loading.global) {
+      return 'hidden';
+    }
+  }
+
   return (
     <>
       <Router>
@@ -406,11 +412,11 @@ const App = (props) => {
                     Find your <span className="inline-block transform -rotate-1"><span className="inline-block bg-gray-350 px-2 py-1 rounded-sm transform -skew-x-12">greyed out</span></span> saved songs that are no longer on <span className="inline-block transform -rotate-1"><span className="inline-block bg-spotify-green px-2 py-1 rounded-sm transform -skew-x-12">Spotify</span></span>
                   </h1>
                 </div>
-                <div>
-                  <p className="text-lg"><b>Why this website?</b> If you're like me, you probably have more than 2000 saved tracks on Spotify. 
+                <div className={`${hideIfLoggedIn()} mb-0`}>
+                  <p className="text-lg">If you're like me, you probably have more than 2000 saved tracks on Spotify. 
                     And you may have realized that songs keep disappearing from your list.
-                    This happens for various reasons: the artist quit the platform or published a remastered album, for example. 
-                    But searching for those greyed out songs manually to replace them takes too much time. 
+                    This happens for various reasons: the artist quit the platform or re-published a song, for example. 
+                    But searching for those greyed out unplayable songs manually to replace them takes too much time. 
                     So <b>I created this tool to connect to Spotify API and fetch them all at once</b>. 
                     I hope it will be as helpful for you as it is for me! Cheers, Soch.</p>
                 </div>
@@ -457,13 +463,13 @@ const App = (props) => {
               percentage={progress.dataFetching} 
               loading={loading.global}
             />
-            <Progress 
+            {/* <Progress 
               stage="Filtering unplayables"
               percentage={progress.unplayablesFiltering} 
               loading={loading.unplayablesFiltering}
-            />
+            /> */}
             <Progress 
-              stage="Enriching songs"
+              stage="Enriching songs with Genius"
               percentage={progress.songEnrichment} 
               loading={loading.songEnrichment}
             />

@@ -47,7 +47,7 @@ export async function fetchAllSongs(token, updateProgress) {
     const market = profile.country || 'US'; // Fallback to US if country not found
     console.log(`Using market: ${market}`);
 
-    let offset = 1915;
+    let offset = 0;
     let batchSize = 50;
     let totalTracks = 0;
     var tracks = [];

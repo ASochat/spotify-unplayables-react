@@ -229,7 +229,7 @@ export const getSongDetails = async (songId, apiKey) => {
         
         let description = domToHtml(songDetails.description.dom);
 
-        console.log(`description of song: ${songDetails.title} by ${songDetails.artist} is: `, description)
+        // console.log(`description of song: ${songDetails.title} by ${songDetails.artist} is: `, description)
         
         // Set description to undefined if it's just a question mark
         if (description === '?' || description.trim() === '?') {

@@ -2,25 +2,33 @@ const UnplayableTracks = (props) => {
     const userName = props.userData.profile.display_name;
     const unplayablesNumber = props.userData.unplayables.length;
     const display = props.userData.fetched.unplayables ? '' : 'hidden';
+
+    const hideIfZeroUnplayables = unplayablesNumber === 0 ? 'hidden' : '';
+    const showIfZeroUnplayables = unplayablesNumber === 0 ? '' : 'hidden';
   
     return (
-      <div className={`mt-8 ${display}`}>
+      <div className={`mt-16 ${display}`}>
         <h2 className="text-2xl font-bold mb-4 sm:text-4xl text-center">You have {unplayablesNumber} unplayable tracks, {userName}</h2>
-        <div className="mb-6 text-gray-600 italic">
-          <span>Please note that we don't fetch your local files in your saved tracks.
-            Therefore, the number on each track may not be the right one- it still gives an indication on its place in your list.
+        <div className={`mb-6 text-center text-gray-600 italic ${hideIfZeroUnplayables}`}>
+          <span>Please note that local files aren't included in this list.
+            Therefore, the number on each track may not be the one in your own list- it still gives an indication on its place to help you find it.
+          </span>
+        </div>
+        <div className={`mb-6 text-center text-gray-600 italic ${showIfZeroUnplayables}`}>
+          <span>The script couldn't find any unplayable tracks.
+            If you're sure there are some, try to refresh your data, or contact me on <a href="mailto:antoine@soch.at" target="_blank" rel="noopener noreferrer">antoine@soch.at</a>.
           </span>
         </div>
         
-        <div className="overflow-x-auto">
+        <div className={`overflow-x-auto ${hideIfZeroUnplayables}`}>
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-black">
+            <thead className="bg-black py-16">
               <tr>
                 <th className="w-16 px-2.5 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">#</th>
                 <th className="px-2.5 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Title</th>
                 <th className="px-2.5 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Artist</th>
                 <th className="px-2.5 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Added on</th>
-                <th className="px-2.5 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">See on Spotify</th>
+                <th className="w-16 px-2.5 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">See on Spotify</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
