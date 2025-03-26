@@ -386,6 +386,11 @@ const App = (props) => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('user_data');
+    setUserData(emptyUserData);
+  };
+
   return (
     <>
       <Router>
@@ -471,7 +476,7 @@ const App = (props) => {
           )}
         </div>
 
-        <Footer userData={userData} loading={loading.global} onConnect={connectToSpotify} />
+        <Footer userData={userData} loading={loading.global} onConnect={connectToSpotify} handleLogout={handleLogout} />
       </Router>
     </>
   )

@@ -1,9 +1,9 @@
 import Connecter from './Connecter.jsx'
-const Footer = ({ userData, loading, onConnect }) => {
+const Footer = ({ userData, loading, onConnect, handleLogout }) => {
     return (
       <footer className="mt-auto">
         <div>
-          <Connecter onClick={onConnect} loading={loading} userData={userData}/>
+          <Connecter onClick={onConnect} loading={loading} userData={userData} handleLogout={handleLogout}/>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center text-gray-350">
           <p>
