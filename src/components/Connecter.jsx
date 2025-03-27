@@ -8,6 +8,12 @@ const Connecter = ({ loading, userData, onClick, handleLogout }) => {
       ? 'bg-white text-gray-400 border-2 border-gray-400 hover:bg-gray-400 hover:text-white hover:border-gray-400'
       : 'hidden';
 
+    const hideIfLoggedIn = () => {
+      if (userData.fetched.global || loading) {
+        return 'hidden';
+      }
+    }
+
       
     const text = userData.fetched.global 
     ? 'Refresh your data' 
@@ -30,7 +36,7 @@ const Connecter = ({ loading, userData, onClick, handleLogout }) => {
           <img 
             src="/Spotify_Primary_Logo_Black_CMYK.svg" 
             alt="Play on Spotify" 
-            className="h-6 w-auto hover:opacity-80 transition-opacity"
+            className={`h-6 w-auto hover:opacity-80 transition-opacity ${hideIfLoggedIn()}`}
           />
           <span className="text-sm sm:text-base">{text}</span>
         </button>

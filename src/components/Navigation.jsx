@@ -3,9 +3,9 @@ import { NavLink } from 'react-router-dom';
 const Navigation = () => {
   return (
     <nav className="w-full">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-10xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-center h-36">
-          <div className="flex space-x-2 sm:space-x-8 w-full max-w-lg">
+          <div className="flex space-x-2 sm:space-x-8 w-full max-w-xl">
             <NavLink 
               to="/" 
               className={({ isActive }) => 
@@ -28,7 +28,7 @@ const Navigation = () => {
                 }`
               }
             >
-              Insights on your songs
+              Insights on your music taste
             </NavLink>
           </div>
         </div>
