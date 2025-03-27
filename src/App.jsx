@@ -21,6 +21,7 @@ import Profile from './components/Profile.jsx'
 import UnplayableTracks from './components/UnplayableTracks.jsx'
 import TopTracks from './components/TopTracks.jsx'
 import PrivacyPolicy from './components/PrivacyPolicy.jsx'  
+import TermsOfUse from './components/TermsOfUse.jsx'
 
 const App = (props) => {
   // console.log('App props: ', props)
@@ -454,6 +455,15 @@ const App = (props) => {
               </div>
             </main>
           } />
+
+          <Route path="/terms-of-use" element={
+            <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+              <div className="space-y-10">
+                <TermsOfUse />
+              </div>
+            </main>
+          } />
+
         </Routes>
 
         {/* Loading progress */}

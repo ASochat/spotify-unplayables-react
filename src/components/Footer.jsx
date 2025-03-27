@@ -29,7 +29,14 @@ const Footer = ({ userData, loading, onConnect, handleLogout }) => {
               className="hover:text-spotify-green-dark transition-colors duration-200 ml-1 underline"
             > 
               Privacy Policy
-            </a>.
+            </a> and the 
+            <a 
+              href="/terms-of-use"
+              className="hover:text-spotify-green-dark transition-colors duration-200 ml-1 underline"
+            > 
+              Terms of Use
+            </a>
+            .
           </p>
         </div>
       </footer>
