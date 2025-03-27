@@ -20,7 +20,8 @@ import Connecter from './components/Connecter.jsx'
 import Profile from './components/Profile.jsx'
 import UnplayableTracks from './components/UnplayableTracks.jsx'
 import TopTracks from './components/TopTracks.jsx'
-
+import PrivacyPolicy from './components/PrivacyPolicy.jsx'  
+import TermsOfUse from './components/TermsOfUse.jsx'
 
 const App = (props) => {
   // console.log('App props: ', props)
@@ -386,6 +387,17 @@ const App = (props) => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('user_data');
+    setUserData(emptyUserData);
+  };
+
+  const hideIfLoggedIn = () => {
+    if (userData.fetched.global || loading.global) {
+      return 'hidden';
+    }
+  }
+
   return (
     <>
       <Router>
@@ -401,11 +413,11 @@ const App = (props) => {
                     Find your <span className="inline-block transform -rotate-1"><span className="inline-block bg-gray-350 px-2 py-1 rounded-sm transform -skew-x-12">greyed out</span></span> saved songs that are no longer on <span className="inline-block transform -rotate-1"><span className="inline-block bg-spotify-green px-2 py-1 rounded-sm transform -skew-x-12">Spotify</span></span>
                   </h1>
                 </div>
-                <div>
-                  <p className="text-lg"><b>Why this website?</b> If you're like me, you probably have more than 2000 saved tracks on Spotify. 
+                <div className={`${hideIfLoggedIn()} mb-0`}>
+                  <p className="text-lg">If you're like me, you probably have more than 2000 saved tracks on Spotify. 
                     And you may have realized that songs keep disappearing from your list.
-                    This happens for various reasons: the artist quit the platform or published a remastered album, for example. 
-                    But searching for those greyed out songs manually to replace them takes too much time. 
+                    This happens for various reasons: the artist quit the platform or re-published a song, for example. 
+                    But searching for those greyed out unplayable songs manually to replace them takes too much time. 
                     So <b>I created this tool to connect to Spotify API and fetch them all at once</b>. 
                     I hope it will be as helpful for you as it is for me! Cheers, Soch.</p>
                 </div>
@@ -421,20 +433,40 @@ const App = (props) => {
             </main>
           } />
           
+          {/* Hiding it until Genius loads faster and I have interesting stuff to show in here */}
           <Route path="/insights" element={
             <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
               <div className="space-y-10">
                 <h1 className="text-3xl sm:text-5xl font-bold text-center leading-tight">
-                  Get some interesting <br /> insights on your songs
+                  {/* Get some interesting <br /> insights on your Songs */}
+                  Still under development. <br />
+                  Coming soon...
                 </h1>
-                <div>
+                {/* <div>
                 {userData.fetched.enrichedSongs && userData.enrichedSongs && (
                   <LanguageAnalysis enrichedSongs={userData.enrichedSongs || []} />
                 )} 
-                </div>
+                </div> */}
               </div>
             </main>
           } />
+
+          <Route path="/privacy-policy" element={
+            <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+              <div className="space-y-10">
+                <PrivacyPolicy />
+              </div>
+            </main>
+          } />
+
+          <Route path="/terms-of-use" element={
+            <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+              <div className="space-y-10">
+                <TermsOfUse />
+              </div>
+            </main>
+          } />
+
         </Routes>
 
         {/* Loading progress */}
@@ -452,16 +484,16 @@ const App = (props) => {
               percentage={progress.dataFetching} 
               loading={loading.global}
             />
-            <Progress 
+            {/* <Progress 
               stage="Filtering unplayables"
               percentage={progress.unplayablesFiltering} 
               loading={loading.unplayablesFiltering}
-            />
-            <Progress 
-              stage="Enriching songs"
+            /> */}
+            {/* <Progress 
+              stage="Enriching songs with Genius"
               percentage={progress.songEnrichment} 
               loading={loading.songEnrichment}
-            />
+            /> */}
           </div>
          )}
         {loadingMessage && (
@@ -471,7 +503,7 @@ const App = (props) => {
           )}
         </div>
 
-        <Footer userData={userData} loading={loading.global} onConnect={connectToSpotify} />
+        <Footer userData={userData} loading={loading.global} onConnect={connectToSpotify} handleLogout={handleLogout} />
       </Router>
     </>
   )
