@@ -433,17 +433,20 @@ const App = (props) => {
             </main>
           } />
           
+          {/* Hiding it until Genius loads faster and I have interesting stuff to show in here */}
           <Route path="/insights" element={
             <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
               <div className="space-y-10">
                 <h1 className="text-3xl sm:text-5xl font-bold text-center leading-tight">
-                  Get some interesting <br /> insights on your songs
+                  {/* Get some interesting <br /> insights on your Songs */}
+                  Still under development. <br />
+                  Coming soon...
                 </h1>
-                <div>
+                {/* <div>
                 {userData.fetched.enrichedSongs && userData.enrichedSongs && (
                   <LanguageAnalysis enrichedSongs={userData.enrichedSongs || []} />
                 )} 
-                </div>
+                </div> */}
               </div>
             </main>
           } />
@@ -486,11 +489,11 @@ const App = (props) => {
               percentage={progress.unplayablesFiltering} 
               loading={loading.unplayablesFiltering}
             /> */}
-            <Progress 
+            {/* <Progress 
               stage="Enriching songs with Genius"
               percentage={progress.songEnrichment} 
               loading={loading.songEnrichment}
-            />
+            /> */}
           </div>
          )}
         {loadingMessage && (
