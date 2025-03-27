@@ -25,9 +25,14 @@ const Connecter = ({ loading, userData, onClick, handleLogout }) => {
         </button>
         <button 
           onClick={onClick}
-          className={`${variant} w-full sm:w-auto px-6 sm:px-12 py-3 rounded-xl font-medium transition-all duration-200 cursor-pointer`}
+          className={`${variant} w-full sm:w-auto px-3 sm:px-6 py-3 rounded-xl font-medium transition-all duration-200 cursor-pointer inline-flex items-center gap-2 sm:gap-4 justify-center`}
         >
-          <span>{text}</span>
+          <img 
+            src="/Spotify_Primary_Logo_Black_CMYK.svg" 
+            alt="Play on Spotify" 
+            className="h-6 w-auto hover:opacity-80 transition-opacity"
+          />
+          <span className="text-sm sm:text-base">{text}</span>
         </button>
       </div>
     );
