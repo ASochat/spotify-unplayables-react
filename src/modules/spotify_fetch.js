@@ -144,3 +144,103 @@ export async function filterUnplayables(tracks) {
 
     return unplayables;
 }
+
+
+export async function fetchAllPlaylists(token, updateProgress) {
+    if (!token) {
+        console.error('No token provided to fetchAllPlaylists');
+        throw new Error('Authentication token is required');
+    }
+
+    // Get user's country from profile
+    const profile = await fetchProfile(token);
+    const market = profile.country || 'US'; // Fallback to US if country not found
+    console.log(`Using market: ${market}`);
+
+    let offset = 0;
+    let batchSize = 50;
+    let totalPlaylists = 0;
+    var playlists = [];
+
+    try {
+        // Make initial request to get total number of tracks
+        const initialResult = await fetch(`https://api.spotify.com/v1/me/playlists?market=${market}&limit=1`, {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!initialResult.ok) {
+            throw new Error(`Spotify API error: ${initialResult.status} ${initialResult.statusText}`);
+        }
+
+        const initialData = await initialResult.json();
+        totalPlaylists = initialData.total;
+        console.log(`Total playlists to fetch: ${totalPlaylists}`);
+
+        while (batchSize == 50) {
+            // console.log(`Fetching tracks with offset ${offset}, token: ${token.substring(0, 10)}...`);
+            
+            var result = await fetch(`https://api.spotify.com/v1/me/playlists?market=${market}&limit=50&offset=${offset}`, {
+                method: "GET",
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            // Check if the response is ok
+            if (!result.ok) {
+                const errorData = await result.json();
+                console.error('Spotify API error:', {
+                    status: result.status,
+                    statusText: result.statusText,
+                    error: errorData,
+                    offset: offset,
+                    hasToken: !!token
+                });
+                throw new Error(`Spotify API error: ${result.status} ${result.statusText}`);
+            }
+
+            let { items } = await result.json();
+
+            console.log('items: ', items);
+            
+            const newPlaylists = items.slice(0, 50).map((item) => ({
+                name: item.name,
+                imageUrl: item.images?item.images[0].url : 'https://i.scdn.co/image/ab6761610000e5eb29dcd6634671874769620203', // Need to replace by a default image if no image is available
+                owner: item.owner.display_name,
+                description: item.description,
+                tracksNumber: item.tracks.total,
+                public: item.public,
+                collaborative: item.collaborative,
+                playlistUrl: item.external_urls.spotify,
+                id: item.id,
+                type: item.type,
+            }));
+
+            playlists = playlists.concat(newPlaylists);
+            batchSize = items.length;
+            offset += batchSize;
+
+            // Calculate and update progress
+            const progress = {
+                percentage: Math.round((playlists.length / totalPlaylists) * 100),
+                playlistsLength: playlists.length,
+                totalPlaylists: totalPlaylists
+            };
+            if (updateProgress) {
+                updateProgress(progress);
+            }
+        }
+
+        console.log(`Fetched all ${playlists.length}/${totalPlaylists} playlists successfully!`);
+        return playlists;
+
+    } catch (error) {
+        console.error('Error in fetchAllPlaylists:', error);
+        throw error;
+    }
+}
