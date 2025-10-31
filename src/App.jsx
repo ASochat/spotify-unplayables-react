@@ -8,7 +8,7 @@ import { BrowserRouter as Router, Routes, Route, Link, NavLink } from 'react-rou
 
 // Import created modules
 import { redirectToAuthCodeFlow, getAccessToken } from './modules/spotify_connect'
-import { fetchAllSongs, fetchProfile, fetchTopTracks, filterUnplayables } from './modules/spotify_fetch.js'
+import { fetchAllSongs, fetchProfile, fetchTopTracks, filterUnplayables, fetchAllPlaylists } from './modules/spotify_fetch.js'
 import { enrichSongsWithGenius } from './modules/lyrics_and_language.js'
 
 // Import created components
@@ -20,6 +20,7 @@ import Connecter from './components/Connecter.jsx'
 import Profile from './components/Profile.jsx'
 import UnplayableTracks from './components/UnplayableTracks.jsx'
 import TopTracks from './components/TopTracks.jsx'
+import Playlists from './components/Playlists.jsx'
 import PrivacyPolicy from './components/PrivacyPolicy.jsx'  
 import TermsOfUse from './components/TermsOfUse.jsx'
 
@@ -57,11 +58,12 @@ const App = (props) => {
   // There's probably a better way, either through class, or JSON loading
   // Since it's the data per user, it should be stored in a JSON server, encapsulated for each user, and not local storaged
   const emptyUserData = { 
-    fetched: {global: false, data: false, unplayables: false, enrichedSongs: false},
+    fetched: {global: false, data: false, unplayables: false, enrichedSongs: false, playlists: false},
     profile: {displayName: '', email: '', country:'', external_urls: {spotify: ''}, images: []}, 
     topTracks: [], 
     allSongs: [], 
     unplayables: [],
+    playlists: [],
   }
 
   let initUserData = localStorage.getItem('user_data')?
@@ -102,10 +104,22 @@ const App = (props) => {
 
   // DECIDED TO LOAD THE USERDATA DIRECTLY FROM MAIN
   const [userData, setUserData] = useState(initUserData)
-  // Maybe I'll have to use useEffect if the userData is not defined yet...
-  // useEffect(() => {
-  //   setUserData(userData)
-  // }, [])
+
+  // Add useEffect to handle state persistence
+  useEffect(() => {
+    // Load userData from localStorage on initial mount
+    const savedUserData = localStorage.getItem('user_data');
+    if (savedUserData) {
+      setUserData(JSON.parse(savedUserData));
+    }
+  }, []);
+
+  // Add useEffect to save userData to localStorage whenever it changes
+  useEffect(() => {
+    if (userData.fetched.global) {
+      localStorage.setItem('user_data', JSON.stringify(userData));
+    }
+  }, [userData]);
 
   // Initialize progress state with all stages
   const [progress, setProgress] = useState({
@@ -192,6 +206,16 @@ const App = (props) => {
             // Update state immediately with top tracks
             setUserData(prev => ({ ...prev, topTracks }));
 
+            updateLoadingState('Getting your playlists...', 22, 'dataFetching', 22);
+            await delay(10);
+            const playlists = await fetchAllPlaylists(accessToken);
+            // Update state immediately with playlists
+            setUserData(prev => ({ 
+              ...prev, 
+              playlists,
+              fetched: {...prev.fetched, playlists: true}
+            }));
+
             updateLoadingState('Fetching all your saved songs...', 25, 'dataFetching', 25);
             await delay(10);
             const allSongs = await fetchAllSongs(accessToken, (progress) => {
@@ -222,6 +246,8 @@ const App = (props) => {
             updateLoadingState('Filtered unplayable tracks!', 70, 'unplayablesFiltering', 100);
 
             // Start language analysis in background
+            const enrichedSongs = [] // To remove once I set it back.
+            /* /////// PAUSING GENIUS ENRICHMENT FOR NOW ///////
             updateLoadingState('Getting lyrics and analyzing languages...', 75, 'songEnrichment', 5);
             setLoading(prev => ({
               ...prev,
@@ -267,18 +293,20 @@ const App = (props) => {
             }
             console.log('Enriched Songs: ', enrichedSongs)
             console.log('Incoherent Songs: ', enrichedSongs.filter(song => !song.geniusDeemedCoherent))
+            */ /////// PAUSING GENIUS ENRICHMENT FOR NOW ///////
 
             updateLoadingState('Saving your data...', 95);
             await delay(10);
 
             // Update state with all the data
             const newUserData = { 
-              fetched: { global: true, data: true, unplayables: true, enrichedSongs: true}, 
+              fetched: { global: true, data: true, unplayables: true, enrichedSongs: true, playlists: true}, 
               profile, 
               topTracks, 
               allSongs, 
               unplayables, 
-              enrichedSongs 
+              enrichedSongs,
+              playlists
             };
             setUserData(newUserData);
             localStorage.setItem('user_data', JSON.stringify(newUserData));
@@ -447,6 +475,23 @@ const App = (props) => {
                   <LanguageAnalysis enrichedSongs={userData.enrichedSongs || []} />
                 )} 
                 </div> */}
+              </div>
+            </main>
+          } />
+
+          {/* Just a test for now */}
+          <Route path="/playlists" element={
+            <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+              <div className="space-y-10">
+                <h1 className="text-3xl sm:text-5xl font-bold text-center leading-tight">
+                  Playlists
+                </h1>
+                {/* {console.log('Playlists route - userData:', userData)}
+                {console.log('Playlists route - fetched.playlists:', userData.fetched.playlists)}
+                {console.log('Playlists route - playlists array:', userData.playlists)} */}
+                {userData.fetched.playlists && userData.playlists && (
+                  <Playlists playlists={userData.playlists || []} />
+                )} 
               </div>
             </main>
           } />
